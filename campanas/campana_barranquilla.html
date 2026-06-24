@@ -90,6 +90,19 @@ input#search:focus{border-color:#ff2222}
 .bar-top .wa:hover{background:#128c7e}
 .bar-top .prem{background:#cc0000;color:#fff}
 .bar-top .prem:hover{background:#990000}
+.bar-top .gear{background:#111;color:#888;border:1px solid #222;border-radius:4px;padding:8px 12px;font-size:12px;cursor:pointer;font-family:inherit;min-width:40px;text-align:center}
+.ad{display:none}
+.bar-top .gear:hover{background:#1a1a1a;border-color:#555}
+#panelCfg{display:none;background:#0d0d0d;border:1px solid #222;border-radius:4px;padding:16px;margin-bottom:12px}
+#panelCfg label{color:#888;font-size:11px;display:block;margin-bottom:4px}
+#panelCfg textarea{width:100%;padding:8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:13px;font-family:inherit;resize:vertical;outline:none;min-height:60px}
+#panelCfg textarea:focus{border-color:#ff3333}
+#panelCfg .row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+#panelCfg .row label{min-width:100px;margin:0}
+#panelCfg .btn-sv{background:#cc0000;border:none;color:#fff;padding:8px 20px;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit}
+#panelCfg .btn-sv:hover{background:#990000}
+#panelCfg .btn-sv:disabled{opacity:.4;cursor:default}
+#panelCfg .st{color:#555;font-size:11px;margin-left:8px}
 </style>
 </head>
 <body>
@@ -100,6 +113,18 @@ input#search:focus{border-color:#ff2222}
 <div class="bar-top">
   <a class="wa" href="https://wa.me/573013361371?text=Hola%20quiero%20mas%20info" target="_blank">Contactar dueño</a>
   <a class="prem" href="#" onclick="return mostrarPago()">Acceso completo · Pago único</a>
+  <button class="gear" onclick="toggleCfg()">⚙</button>
+</div>
+
+<div id="panelCfg">
+  <div class="row"><label>Producto / Servicio</label><textarea id="cfgProducto" rows="2"></textarea></div>
+  <div class="row"><label>Propuesta de valor</label><textarea id="cfgValor" rows="2"></textarea></div>
+  <div class="row"><label>Diferenciador</label><textarea id="cfgDiferencia" rows="2"></textarea></div>
+  <div class="row" style="margin-top:12px">
+    <button class="btn-sv" id="btnGuardarCfg" onclick="guardarCfg()">Guardar y regenerar</button>
+    <span class="st" id="cfgStatus"></span>
+    <span class="st" style="margin-left:auto"><label style="display:inline;cursor:pointer"><input type="checkbox" onchange="document.querySelectorAll('.ad').forEach(function(e){e.style.display=this.checked?'block':'none'})"> Mostrar anuncios</label></span>
+  </div>
 </div>
 
 <div class="modes">
@@ -164,6 +189,42 @@ input#search:focus{border-color:#ff2222}
 </div>
 
 <script>
+function toggleCfg() {
+  var p = document.getElementById("panelCfg");
+  p.style.display = p.style.display === "none" ? "block" : "none";
+  if (p.style.display === "block") cargarCfg();
+}
+function cargarCfg() {
+  var r = new XMLHttpRequest();
+  r.open("GET", "/api/config", true);
+  r.onload = function() {
+    var d = JSON.parse(r.responseText);
+    document.getElementById("cfgProducto").value = d.producto || "";
+    document.getElementById("cfgValor").value = d.propuesta_valor || "";
+    document.getElementById("cfgDiferencia").value = d.diferenciador || "";
+  };
+  r.send();
+}
+function guardarCfg() {
+  var btn = document.getElementById("btnGuardarCfg");
+  var st = document.getElementById("cfgStatus");
+  btn.disabled = true;
+  st.textContent = "Regenerando mensajes...";
+  var r = new XMLHttpRequest();
+  r.open("POST", "/api/config", true);
+  r.setRequestHeader("Content-Type", "application/json");
+  r.onload = function() {
+    var d = JSON.parse(r.responseText);
+    if (d.ok) { st.textContent = "Listo, recargando..."; setTimeout(function() { location.reload(); }, 1500); }
+    else { st.textContent = "Error: " + (d.error || "desconocido"); btn.disabled = false; }
+  };
+  r.onerror = function() { st.textContent = "Error de conexion"; btn.disabled = false; };
+  r.send(JSON.stringify({
+    producto: document.getElementById("cfgProducto").value,
+    propuesta_valor: document.getElementById("cfgValor").value,
+    diferenciador: document.getElementById("cfgDiferencia").value
+  }));
+}
 function mostrarPago() {
   alert("Acceso completo por pago unico.\n\nEscribeme al WhatsApp para activarlo:\n+57 301 336 1371");
   return false;

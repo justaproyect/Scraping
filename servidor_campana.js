@@ -1,11 +1,13 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { execSync } = require("child_process");
 const nodemailer = require("nodemailer");
 
 const DATA = path.join(__dirname, "datos", "enviar_barranquilla.json");
 const PROGRESS = path.join(__dirname, ".gmail_progress.json");
 const CONFIG = path.join(__dirname, "datos", "smtp_config.json");
+const CONFIG_PATH = path.join(__dirname, "datos", "config.json");
 
 function getSMTPConfig() {
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
@@ -151,6 +153,34 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (ruta === "/api/config" && req.method === "GET") {
+    var cfg = { objetivo: "", error: null };
+    try { Object.assign(cfg, JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"))); } catch (e) { cfg.error = e.message; }
+    res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
+    res.end(JSON.stringify(cfg));
+    return;
+  }
+
+  if (ruta === "/api/config" && req.method === "POST") {
+    var cuerpo = "";
+    req.on("data", function(c) { cuerpo += c; });
+    req.on("end", function() {
+      var result = { ok: false, error: null };
+      try {
+        var nuevo = JSON.parse(cuerpo);
+        var actual = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
+        Object.assign(actual, nuevo);
+        fs.writeFileSync(CONFIG_PATH, JSON.stringify(actual, null, 2));
+        execSync("python 2_analizar.py", { cwd: __dirname, timeout: 120000, stdio: "pipe" });
+        execSync("node generar_campana.js", { cwd: __dirname, timeout: 120000, stdio: "pipe" });
+        result.ok = true;
+      } catch (e) { result.error = e.message; }
+      res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
+      res.end(JSON.stringify(result));
+    });
+    return;
+  }
+
   // Serve static files
   var filePath = path.join(__dirname, "campanas", ruta === "/" ? "campana_barranquilla.html" : ruta);
   var ext = path.extname(filePath);
@@ -165,8 +195,9 @@ var PORT = process.env.PORT || 4567;
 server.listen(PORT, () => {
   console.log("Servidor en puerto: " + PORT);
   console.log("Api:");
-  console.log("  GET /api/estado     — progreso actual");
+  console.log("  GET /api/estado        — progreso actual");
   console.log("  GET /api/iniciar?batch=N — iniciar envio SMTP");
-  console.log("  GET /api/detener    — detener envio");
-  console.log("  GET /api/reiniciar  — borrar progreso");
+  console.log("  GET /api/detener       — detener envio");
+  console.log("  GET /api/reiniciar     — borrar progreso");
+  console.log("  GET/POST /api/config   — leer/cambiar objetivo de campana");
 });
