@@ -171,8 +171,8 @@ const server = http.createServer((req, res) => {
         var actual = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
         Object.assign(actual, nuevo);
         fs.writeFileSync(CONFIG_PATH, JSON.stringify(actual, null, 2));
-        execSync("python 2_analizar.py", { cwd: __dirname, timeout: 120000, stdio: "pipe" });
-        execSync("node generar_campana.js", { cwd: __dirname, timeout: 120000, stdio: "pipe" });
+        execSync("node regenerar_mensajes.js", { cwd: __dirname, timeout: 60000, stdio: "pipe" });
+        execSync("node generar_campana.js", { cwd: __dirname, timeout: 60000, stdio: "pipe" });
         result.ok = true;
       } catch (e) { result.error = e.message; }
       res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });

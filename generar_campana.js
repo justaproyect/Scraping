@@ -179,6 +179,8 @@ input#search:focus{border-color:#ff2222}
 
 <div id="panelCfg">
   <div class="row"><label>Producto / Servicio</label><textarea id="cfgProducto" rows="2"></textarea></div>
+  <div class="row"><label>Servicios clave</label><textarea id="cfgServicios" rows="2" placeholder="separados por coma"></textarea></div>
+  <div class="row"><label>Ubicacion</label><input type="text" id="cfgUbicacion" style="flex:1;padding:8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:13px;font-family:inherit;outline:none"></div>
   <div class="row"><label>Propuesta de valor</label><textarea id="cfgValor" rows="2"></textarea></div>
   <div class="row"><label>Diferenciador</label><textarea id="cfgDiferencia" rows="2"></textarea></div>
   <div class="row" style="margin-top:12px">
@@ -261,6 +263,8 @@ function cargarCfg() {
   r.onload = function() {
     var d = JSON.parse(r.responseText);
     document.getElementById("cfgProducto").value = d.producto || "";
+    document.getElementById("cfgServicios").value = (d.servicios_clave || []).join(", ");
+    document.getElementById("cfgUbicacion").value = d.ubicacion || "";
     document.getElementById("cfgValor").value = d.propuesta_valor || "";
     document.getElementById("cfgDiferencia").value = d.diferenciador || "";
   };
@@ -282,6 +286,8 @@ function guardarCfg() {
   r.onerror = function() { st.textContent = "Error de conexion"; btn.disabled = false; };
   r.send(JSON.stringify({
     producto: document.getElementById("cfgProducto").value,
+    servicios_clave: document.getElementById("cfgServicios").value.split(",").map(function(s) { return s.trim(); }).filter(Boolean),
+    ubicacion: document.getElementById("cfgUbicacion").value,
     propuesta_valor: document.getElementById("cfgValor").value,
     diferenciador: document.getElementById("cfgDiferencia").value
   }));
