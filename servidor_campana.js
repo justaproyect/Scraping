@@ -39,7 +39,7 @@ async function iniciarEnvio(batchSize) {
   var cfg = getSMTPConfig();
   if (!cfg) { estado.error = "Config SMTP no encontrada (smtp_config.json o env vars)"; return; }
 
-  transport = nodemailer.createTransport({ service: "gmail", auth: { user: cfg.user, pass: cfg.pass } });
+  transport = nodemailer.createTransport({ service: "gmail", auth: { user: cfg.user, pass: cfg.pass }, connectionTimeout: 8000, greetingTimeout: 8000, socketTimeout: 12000 });
   try { await transport.verify(); } catch (e) { estado.error = "SMTP: " + e.message; return; }
 
   var negocios = JSON.parse(fs.readFileSync(DATA, "utf-8")).filter(n => n.email && /@/.test(n.email));
@@ -124,7 +124,7 @@ const server = http.createServer((req, res) => {
         if (!transport) {
           var cfg = getSMTPConfig();
           if (!cfg) { resJson.error = "Sin config SMTP"; res.writeHead(200,{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}); res.end(JSON.stringify(resJson)); return; }
-          transport = nodemailer.createTransport({ service: "gmail", auth: { user: cfg.user, pass: cfg.pass } });
+          transport = nodemailer.createTransport({ service: "gmail", auth: { user: cfg.user, pass: cfg.pass }, connectionTimeout: 8000, greetingTimeout: 8000, socketTimeout: 12000 });
         }
         await transport.sendMail({
           from: getSMTPConfig().user,
