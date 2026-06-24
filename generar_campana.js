@@ -151,9 +151,9 @@ input#search:focus{border-color:#ff2222}
 .bar-top .wa:hover{background:#128c7e}
 .bar-top .prem{background:#cc0000;color:#fff}
 .bar-top .prem:hover{background:#990000}
-.bar-top .gear{background:#111;color:#888;border:1px solid #222;border-radius:4px;padding:8px 12px;font-size:12px;cursor:pointer;font-family:inherit;min-width:40px;text-align:center}
+.bar-top .btn-personalizar{flex:2;background:transparent;color:#fff;border:1px solid #555;border-radius:4px;padding:8px 12px;font-size:12px;cursor:pointer;font-family:inherit;text-align:center;font-weight:500}
+.bar-top .btn-personalizar:hover{background:#1a0000;border-color:#cc0000;color:#ff3333}
 .ad{display:none}
-.bar-top .gear:hover{background:#1a1a1a;border-color:#555}
 #panelCfg{display:none;background:#0d0d0d;border:1px solid #222;border-radius:4px;padding:16px;margin-bottom:12px}
 #panelCfg label{color:#888;font-size:11px;display:block;margin-bottom:4px}
 #panelCfg textarea{width:100%;padding:8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:13px;font-family:inherit;resize:vertical;outline:none;min-height:60px}
@@ -172,9 +172,9 @@ input#search:focus{border-color:#ff2222}
 <p class="desc">${negocios.length} negocios · ${contactos.length} WhatsApp (celular 3XX) · ${sinTelefono.length + (negocios.filter(n => n.telefono && !limpiarNumero(n.telefono)).length)} fijos/sin número</p>
 
 <div class="bar-top">
+  <button class="btn-personalizar" onclick="toggleCfg()">✎ Personalizar campaña</button>
   <a class="wa" href="https://wa.me/573013361371?text=Hola%20quiero%20mas%20info" target="_blank">Contactar dueño</a>
   <a class="prem" href="#" onclick="return mostrarPago()">Acceso completo · Pago único</a>
-  <button class="gear" onclick="toggleCfg()">⚙</button>
 </div>
 
 <div id="panelCfg">
