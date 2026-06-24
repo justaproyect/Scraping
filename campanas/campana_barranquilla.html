@@ -79,6 +79,11 @@ input#search:focus{border-color:#ff2222}
 .modes button{background:#111;border:none;color:#888;padding:6px 16px;font-size:12px;cursor:pointer;font-family:inherit;border-right:1px solid #222}
 .modes button:last-child{border-right:none}
 .modes button.act{background:#1a0000;color:#ff3333;font-weight:600}
+.ad{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:4px;padding:8px 12px;margin:12px 0;text-align:center;position:relative}
+.ad .lbl{position:absolute;top:2px;left:6px;font-size:8px;color:#444;text-transform:uppercase;letter-spacing:.1em}
+.ad .in{color:#555;font-size:11px}
+.ad a{color:#cc0000;text-decoration:none;font-size:12px}
+.ad a:hover{color:#ff2222}
 </style>
 </head>
 <body>
@@ -98,6 +103,8 @@ input#search:focus{border-color:#ff2222}
   <div class="stat"><div class="n">26</div><div class="l">Tipos</div></div>
   <div class="stat"><button class="btn-start" onclick="iniciar()">Envio Masivo</button></div>
 </div>
+
+<div class="ad"><span class="lbl">Anuncio</span><span class="in">╰┈➤ <a href="#">Mas Negocios</a> · <a href="#">Tu anuncio aqui</a></span></div>
 
 <div class="cats" id="cats"></div>
 
@@ -128,6 +135,8 @@ input#search:focus{border-color:#ff2222}
 </div>
 
 <input type="text" id="search" placeholder="Buscar por nombre, tipo o telefono..." onkeyup="filtrar()">
+
+<div class="ad"><span class="lbl">Anuncio</span><span class="in">╰┈➤ <a href="#">Tu marca aqui</a> · <a href="#">Publica con nosotros</a></span></div>
 
 <table>
 <thead><tr><th>Nombre</th><th class="col-tel">Telefono</th><th class="col-email" style="display:none">Email</th><th>Servicios</th><th>Contacto</th><th>Msj</th></tr></thead>
