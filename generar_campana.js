@@ -293,7 +293,7 @@ function guardarCfg() {
   }));
 }
 function mostrarPago() {
-  alert("Acceso completo por pago unico.\n\nEscribeme al WhatsApp para activarlo:\n+57 301 336 1371");
+  alert("Acceso completo por pago unico.\\n\\nEscribeme al WhatsApp para activarlo:\\n+57 301 336 1371");
   return false;
 }
 const contactos = ${contactosJSON};
