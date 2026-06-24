@@ -145,12 +145,23 @@ input#search:focus{border-color:#ff2222}
 .ad .in{color:#555;font-size:11px}
 .ad a{color:#cc0000;text-decoration:none;font-size:12px}
 .ad a:hover{color:#ff2222}
+.bar-top{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.bar-top a{flex:1;padding:8px 12px;border-radius:4px;text-align:center;font-size:12px;text-decoration:none;font-weight:500;min-width:120px}
+.bar-top .wa{background:#075e54;color:#fff}
+.bar-top .wa:hover{background:#128c7e}
+.bar-top .prem{background:#cc0000;color:#fff}
+.bar-top .prem:hover{background:#990000}
 </style>
 </head>
 <body>
 
 <h1>Scraping <span style="color:#cc0000">Justa</span> — ${campanaName}</h1>
 <p class="desc">${negocios.length} negocios · ${contactos.length} WhatsApp (celular 3XX) · ${sinTelefono.length + (negocios.filter(n => n.telefono && !limpiarNumero(n.telefono)).length)} fijos/sin número</p>
+
+<div class="bar-top">
+  <a class="wa" href="https://wa.me/573013361371?text=Hola%20quiero%20mas%20info" target="_blank">Contactar dueño</a>
+  <a class="prem" href="#" onclick="return mostrarPago()">Acceso completo · Pago único</a>
+</div>
 
 <div class="modes">
   <button class="act" onclick="setModo('wa')" id="modWA">WhatsApp</button>
@@ -214,6 +225,10 @@ ${htmlRows}
 </div>
 
 <script>
+function mostrarPago() {
+  alert("Acceso completo por pago unico.\n\nEscribeme al WhatsApp para activarlo:\n+57 301 336 1371");
+  return false;
+}
 const contactos = ${contactosJSON};
 const categorias = ${categoriasJSON};
 const COOLDOWN = 60;
