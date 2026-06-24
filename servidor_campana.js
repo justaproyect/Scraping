@@ -85,7 +85,7 @@ const server = http.createServer((req, res) => {
   var url = new URL(req.url, "http://localhost");
   var ruta = url.pathname;
 
-  if (ruta === "/" || ruta === "/health") {
+  if (ruta === "/health") {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("OK");
     return;
