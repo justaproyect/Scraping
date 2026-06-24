@@ -122,10 +122,13 @@ input#search:focus{border-color:#ff2222}
   <div class="row"><label>Ubicacion</label><input type="text" id="cfgUbicacion" style="flex:1;padding:8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:13px;font-family:inherit;outline:none"></div>
   <div class="row"><label>Propuesta de valor</label><textarea id="cfgValor" rows="2"></textarea></div>
   <div class="row"><label>Diferenciador</label><textarea id="cfgDiferencia" rows="2"></textarea></div>
-  <div class="row" style="margin-top:8px;border-top:1px solid #222;padding-top:8px">
-    <label style="min-width:80px;font-size:10px">SMTP User</label><input type="text" id="smtpUser" placeholder="usuario@gmail.com" style="flex:1;padding:6px 8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:12px;font-family:inherit;outline:none">
-    <label style="min-width:40px;font-size:10px">Pass</label><input type="password" id="smtpPass" placeholder="App Password" style="flex:1;padding:6px 8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:12px;font-family:inherit;outline:none">
+  <div class="row" style="margin-top:8px;border-top:1px solid #222;padding-top:8px;flex-wrap:wrap">
+    <label style="min-width:50px;font-size:10px">SendGrid</label><input type="password" id="sgKey" placeholder="SG.xxxxx API Key (recomendado para Render)" style="flex:3;min-width:150px;padding:6px 8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:12px;font-family:inherit;outline:none">
     <span id="smtpCfgStatus" style="color:#555;font-size:10px"></span>
+  </div>
+  <div class="row" style="gap:8px;flex-wrap:wrap">
+    <label style="min-width:50px;font-size:10px">SMTP User</label><input type="text" id="smtpUser" placeholder="usuario@gmail.com" style="flex:2;min-width:120px;padding:6px 8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:12px;font-family:inherit;outline:none">
+    <label style="min-width:40px;font-size:10px">Pass</label><input type="password" id="smtpPass" placeholder="App Password" style="flex:2;min-width:120px;padding:6px 8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:12px;font-family:inherit;outline:none">
   </div>
   <div class="row" style="margin-top:12px">
     <button class="btn-sv" id="btnGuardarCfg" onclick="guardarCfg()">Guardar y regenerar</button>
@@ -218,7 +221,8 @@ function cargarCfg() {
   r2.onload = function() {
     var d = JSON.parse(r2.responseText);
     document.getElementById("smtpUser").value = d.user || "";
-    document.getElementById("smtpCfgStatus").textContent = d.configured ? "Conectado" : "No configurado";
+    document.getElementById("sgKey").value = d.sendgrid ? "***configurado***" : "";
+    document.getElementById("smtpCfgStatus").textContent = d.configured ? (d.sendgrid ? "SendGrid" : "SMTP") : "No configurado";
     document.getElementById("smtpCfgStatus").style.color = d.configured ? "#3b3" : "#833";
   };
   r2.send();
@@ -246,11 +250,13 @@ function guardarCfg() {
   }));
   var smtpUser = document.getElementById("smtpUser").value.trim();
   var smtpPass = document.getElementById("smtpPass").value;
-  if (smtpUser || smtpPass) {
+  var sgKey = document.getElementById("sgKey").value.trim();
+  if (sgKey === "***configurado***") sgKey = "";
+  if (smtpUser || smtpPass || sgKey) {
     var rs = new XMLHttpRequest();
     rs.open("POST", "/api/smtp-config", true);
     rs.setRequestHeader("Content-Type", "application/json");
-    rs.send(JSON.stringify({ user: smtpUser, pass: smtpPass }));
+    rs.send(JSON.stringify({ user: smtpUser, pass: smtpPass, sendgrid: sgKey }));
   }
 }
 function mostrarPago() {

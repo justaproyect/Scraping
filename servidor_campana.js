@@ -1,4 +1,5 @@
 const http = require("http");
+const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
@@ -6,18 +7,9 @@ const nodemailer = require("nodemailer");
 
 const DATA = path.join(__dirname, "datos", "enviar_barranquilla.json");
 const PROGRESS = path.join(__dirname, ".gmail_progress.json");
-const CONFIG = path.join(__dirname, "datos", "smtp_config.json");
+const SMTP_CFG = path.join(__dirname, "datos", "smtp_config.json");
 const CONFIG_PATH = path.join(__dirname, "datos", "config.json");
-
-function getSMTPConfig() {
-  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-    return { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS };
-  }
-  if (fs.existsSync(CONFIG)) return JSON.parse(fs.readFileSync(CONFIG, "utf-8"));
-  return null;
-}
 const HTML_FILE = path.join(__dirname, "campanas", "campana_barranquilla.html");
-
 const MIME = { ".html": "text/html", ".css": "text/css", ".js": "application/javascript", ".json": "application/json" };
 
 let estado = { total: 0, enviados: 0, fallos: 0, pendientes: 0, activo: false, actual: "" };
@@ -29,25 +21,86 @@ function cargarProgreso() {
   if (!fs.existsSync(PROGRESS)) return {};
   return JSON.parse(fs.readFileSync(PROGRESS, "utf-8"));
 }
-
 function guardarProgreso(d) {
   fs.writeFileSync(PROGRESS, JSON.stringify(d));
 }
 
+function getSMTPConfig() {
+  if (process.env.SMTP_USER && process.env.SMTP_PASS)
+    return { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS };
+  if (fs.existsSync(SMTP_CFG)) return JSON.parse(fs.readFileSync(SMTP_CFG, "utf-8"));
+  return null;
+}
+
+function getSendGridKey() {
+  if (process.env.SENDGRID_API_KEY) return process.env.SENDGRID_API_KEY;
+  try { var c = JSON.parse(fs.readFileSync(SMTP_CFG, "utf-8")); if (c.sendgrid) return c.sendgrid; } catch(e) {}
+  return null;
+}
+
+function sendViaSendGrid(to, subject, text) {
+  return new Promise(function(resolve, reject) {
+    var key = getSendGridKey();
+    if (!key) return reject(new Error("No SendGrid key"));
+    var data = JSON.stringify({
+      personalizations: [{ to: [{ email: to }] }],
+      from: { email: process.env.SMTP_USER || "justaproyect7@gmail.com" },
+      subject: subject,
+      content: [{ type: "text/plain", value: text }]
+    });
+    var opts = {
+      hostname: "api.sendgrid.com",
+      path: "/v3/mail/send",
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + key,
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(data)
+      },
+      timeout: 15000
+    };
+    var req = https.request(opts, function(res) {
+      var body = "";
+      res.on("data", function(c) { body += c; });
+      res.on("end", function() {
+        if (res.statusCode >= 200 && res.statusCode < 300) resolve();
+        else reject(new Error("SendGrid error " + res.statusCode + ": " + body.slice(0, 200)));
+      });
+    });
+    req.on("error", reject);
+    req.on("timeout", function() { req.destroy(); reject(new Error("SendGrid timeout")); });
+    req.write(data);
+    req.end();
+  });
+}
+
+async function enviarEmail(to, nombre, mensaje) {
+  var subject = "Contacto " + nombre;
+  var text = mensaje || "Hola, " + nombre + "!";
+  var sgKey = getSendGridKey();
+  if (sgKey) return sendViaSendGrid(to, subject, text);
+  if (!transport) {
+    var cfg = getSMTPConfig();
+    if (!cfg) throw new Error("Sin config de email (SendGrid o SMTP)");
+    transport = nodemailer.createTransport({
+      host: "smtp.gmail.com", port: 587, secure: false, requireTLS: true,
+      auth: { user: cfg.user, pass: cfg.pass },
+      connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 15000
+    });
+  }
+  await transport.sendMail({ from: getSMTPConfig().user, to: to, subject: subject, text: text });
+}
+
 async function iniciarEnvio(batchSize) {
   if (enviando) return;
-  var cfg = getSMTPConfig();
-  if (!cfg) { estado.error = "Config SMTP no encontrada (smtp_config.json o env vars)"; return; }
-
-  transport = nodemailer.createTransport({ host: "smtp.gmail.com", port: 587, secure: false, requireTLS: true, auth: { user: cfg.user, pass: cfg.pass }, connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 15000 });
-  try { await transport.verify(); } catch (e) { estado.error = "SMTP: " + e.message; transport = null; return; }
-
+  if (!getSendGridKey() && !getSMTPConfig()) {
+    estado.error = "Config de email no encontrada";
+    return;
+  }
   var negocios = JSON.parse(fs.readFileSync(DATA, "utf-8")).filter(n => n.email && /@/.test(n.email));
   var enviados = cargarProgreso();
   var pendientes = negocios.filter(n => !enviados[n.email + n.nombre]);
-
   if (pendientes.length === 0) { estado.error = "Todos enviados"; return; }
-
   var lote = Math.min(batchSize || pendientes.length, pendientes.length);
   enviando = true;
   detenerSolicitado = false;
@@ -57,17 +110,12 @@ async function iniciarEnvio(batchSize) {
   estado.fallos = 0;
   estado.pendientes = pendientes.length;
   estado.actual = "";
-
   for (var i = 0; i < lote && !detenerSolicitado; i++) {
     var n = pendientes[i];
     var key = n.email + n.nombre;
     estado.actual = n.nombre + " (" + n.email + ")";
     try {
-      await transport.sendMail({
-        from: cfg.user, to: n.email,
-        subject: "Contacto " + n.nombre,
-        text: n.mensaje || "Hola, " + n.nombre + "!"
-      });
+      await enviarEmail(n.email, n.nombre, n.mensaje);
       enviados[key] = true;
       guardarProgreso(enviados);
       estado.enviados++;
@@ -75,9 +123,8 @@ async function iniciarEnvio(batchSize) {
       estado.fallos++;
     }
     estado.pendientes = pendientes.length - i - 1;
-    if (i < lote - 1 && !detenerSolicitado) await new Promise(r => setTimeout(r, (cfg.delay || 5) * 1000));
+    if (i < lote - 1 && !detenerSolicitado) await new Promise(r => setTimeout(r, 5000));
   }
-
   enviando = false;
   estado.activo = false;
   estado.actual = detenerSolicitado ? "Detenido" : "Completado";
@@ -87,11 +134,7 @@ const server = http.createServer((req, res) => {
   var url = new URL(req.url, "http://localhost");
   var ruta = url.pathname;
 
-  if (ruta === "/health") {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("OK");
-    return;
-  }
+  if (ruta === "/health") { res.writeHead(200, { "Content-Type": "text/plain" }); res.end("OK"); return; }
 
   if (ruta === "/api/estado") {
     res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
@@ -121,17 +164,8 @@ const server = http.createServer((req, res) => {
       var d = JSON.parse(cuerpo);
       var resJson = { ok: false };
       try {
-        if (!transport) {
-          var cfg = getSMTPConfig();
-          if (!cfg) { resJson.error = "Sin config SMTP"; res.writeHead(200,{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}); res.end(JSON.stringify(resJson)); return; }
-          transport = nodemailer.createTransport({ host: "smtp.gmail.com", port: 587, secure: false, requireTLS: true, auth: { user: cfg.user, pass: cfg.pass }, connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 15000 });
-        }
-        await transport.sendMail({
-          from: getSMTPConfig().user,
-          to: d.email,
-          subject: "Contacto " + d.nombre,
-          text: d.mensaje
-        });
+        await enviarEmail(d.email, d.nombre, d.mensaje);
+        transport = null;
         var env = cargarProgreso();
         env[d.email + d.nombre] = true;
         guardarProgreso(env);
@@ -145,8 +179,13 @@ const server = http.createServer((req, res) => {
 
   if (ruta === "/api/smtp-config" && req.method === "GET") {
     var cfg = getSMTPConfig();
+    var sgKey = getSendGridKey();
     res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
-    res.end(JSON.stringify({ user: cfg ? cfg.user : "", configured: !!cfg }));
+    res.end(JSON.stringify({
+      user: cfg ? cfg.user : "",
+      configured: !!(cfg || sgKey),
+      sendgrid: !!sgKey
+    }));
     return;
   }
 
@@ -156,10 +195,12 @@ const server = http.createServer((req, res) => {
     req.on("end", function() {
       try {
         var d = JSON.parse(cuerpo);
-        if (d.pass && d.pass.length > 3) {
-          fs.writeFileSync(CONFIG, JSON.stringify({ user: d.user || "", pass: d.pass }));
-          transport = null;
-        }
+        var obj = {};
+        if (fs.existsSync(SMTP_CFG)) obj = JSON.parse(fs.readFileSync(SMTP_CFG, "utf-8"));
+        if (d.user || d.pass) { obj.user = d.user || ""; obj.pass = d.pass || ""; }
+        if (d.sendgrid !== undefined) obj.sendgrid = d.sendgrid || "";
+        fs.writeFileSync(SMTP_CFG, JSON.stringify(obj));
+        transport = null;
       } catch(e) {}
       res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
       res.end(JSON.stringify({ ok: true }));
@@ -205,7 +246,6 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Serve static files
   var filePath = path.join(__dirname, "campanas", ruta === "/" ? "campana_barranquilla.html" : ruta);
   var ext = path.extname(filePath);
   fs.readFile(filePath, (err, data) => {
@@ -218,13 +258,14 @@ const server = http.createServer((req, res) => {
 var PORT = process.env.PORT || 4567;
 server.listen(PORT, () => {
   console.log("Servidor en puerto: " + PORT);
+  var sgOk = getSendGridKey() ? "SI" : "NO";
   var smtpOk = getSMTPConfig() ? "SI" : "NO";
-  console.log("Config SMTP: " + smtpOk);
+  console.log("SendGrid: " + sgOk + " | SMTP: " + smtpOk);
   console.log("Api:");
-  console.log("  GET /api/estado          — progreso actual");
-  console.log("  GET /api/iniciar?batch=N — iniciar envio SMTP");
-  console.log("  GET /api/detener         — detener envio");
-  console.log("  GET /api/reiniciar       — borrar progreso");
-  console.log("  GET/POST /api/config     — leer/cambiar objetivo de campana");
-  console.log("  GET/POST /api/smtp-config— leer/configurar credenciales SMTP");
+  console.log("  GET /api/estado            — progreso actual");
+  console.log("  GET /api/iniciar?batch=N   — iniciar envio batch");
+  console.log("  GET /api/detener           — detener envio");
+  console.log("  GET /api/reiniciar         — borrar progreso");
+  console.log("  GET/POST /api/config       — leer/cambiar objetivo");
+  console.log("  GET/POST /api/smtp-config  — leer/configurar credenciales");
 });
