@@ -41,7 +41,7 @@ for (const file of files) {
       const email = n.email || "";
       const mailto = email ? "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(email) + "&su=" + encodeURIComponent("Contacto " + n.nombre) + "&body=" + msg : "";
       const msgRaw = n.mensaje || `Hola, vi que ${n.nombre} esta en ${tipo}. Te puedo enviar info?`;
-      contactos.push({ idx, nombre: n.nombre, telefono: n.telefono, tipo, wa, email, mailto, mensaje: msgRaw });
+      contactos.push({ idx, nombre: n.nombre, telefono: n.telefono, tel_clean: num, tipo, email, mensaje: msgRaw });
       htmlRows += `<tr data-idx="${idx}" data-email="${email ? 1 : 0}"><td>${n.nombre}</td><td class="col-tel">${n.telefono}</td><td class="col-email" style="display:none">${email || "---"}</td><td class="svc">${svc}</td><td><a href="${wa}" target="_blank" class="btn btn-wa-link">Enviar</a><a href="${mailto || "#"}" target="_blank" class="btn btn-email-link" style="display:none">Enviar</a><button class="btn btn-smtp-link" data-idx="${idx}" onclick="enviarUnicoSMTP(this)" style="display:none">Enviar</button></td><td><a href="${wa}" target="_blank" class="btn-p btn-wa-link">Msj</a><a href="${mailto || "#"}" target="_blank" class="btn-p btn-email-link" style="display:none">Msj</a></td></tr>`;
       idx++;
     }
@@ -57,8 +57,6 @@ for (const file of files) {
     return { tipo: t, wa, total };
   }).filter((c) => c.wa > 0);
   const categoriasJSON = JSON.stringify(categorias);
-  const catFolder = path.join(DATA_DIR, "por_categoria").replace(/\\/g, "/");
-
   const html = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -345,7 +343,6 @@ function filtrarCategoria(tipo) {
   }
 }
 
-const catFolder = "${catFolder}";
 let enviados;
 try {
   const saved = localStorage.getItem(KEY);
@@ -422,14 +419,17 @@ function enviarUnicoSMTP(btn) {
   });
 }
 
+function waURL(t, m) { return "https://wa.me/" + t + "?text=" + encodeURIComponent(m); }
+function mailtoURL(e, n, m) { return "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(e) + "&su=" + encodeURIComponent("Contacto " + n) + "&body=" + encodeURIComponent(m); }
+
 function abrirWA() {
   if (!activo) return;
   var c = contactos[cur];
   if (modo === "email") {
     if (!c.email) { alert("Este contacto no tiene email. Saltando..."); saltar(); return; }
-    window.open(c.mailto, "_blank");
+    window.open(mailtoURL(c.email, c.nombre, c.mensaje), "_blank");
   } else {
-    window.open(c.wa, "w");
+    window.open(waURL(c.tel_clean, c.mensaje), "w");
   }
 }
 
