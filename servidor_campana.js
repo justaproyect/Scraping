@@ -6,6 +6,14 @@ const nodemailer = require("nodemailer");
 const DATA = path.join(__dirname, "datos", "enviar_barranquilla.json");
 const PROGRESS = path.join(__dirname, ".gmail_progress.json");
 const CONFIG = path.join(__dirname, "datos", "smtp_config.json");
+
+function getSMTPConfig() {
+  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    return { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS };
+  }
+  if (fs.existsSync(CONFIG)) return JSON.parse(fs.readFileSync(CONFIG, "utf-8"));
+  return null;
+}
 const HTML_FILE = path.join(__dirname, "campanas", "campana_barranquilla.html");
 
 const MIME = { ".html": "text/html", ".css": "text/css", ".js": "application/javascript", ".json": "application/json" };
@@ -26,9 +34,8 @@ function guardarProgreso(d) {
 
 async function iniciarEnvio(batchSize) {
   if (enviando) return;
-  if (!fs.existsSync(CONFIG)) { estado.error = "Crea datos/smtp_config.json primero"; return; }
-  var cfg = JSON.parse(fs.readFileSync(CONFIG, "utf-8"));
-  if (!cfg.user || !cfg.pass) { estado.error = "Config incompleta"; return; }
+  var cfg = getSMTPConfig();
+  if (!cfg) { estado.error = "Config SMTP no encontrada (smtp_config.json o env vars)"; return; }
 
   transport = nodemailer.createTransport({ service: "gmail", auth: { user: cfg.user, pass: cfg.pass } });
   try { await transport.verify(); } catch (e) { estado.error = "SMTP: " + e.message; return; }
@@ -113,11 +120,12 @@ const server = http.createServer((req, res) => {
       var resJson = { ok: false };
       try {
         if (!transport) {
-          var cfg = JSON.parse(fs.readFileSync(CONFIG, "utf-8"));
+          var cfg = getSMTPConfig();
+          if (!cfg) { resJson.error = "Sin config SMTP"; res.writeHead(200,{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}); res.end(JSON.stringify(resJson)); return; }
           transport = nodemailer.createTransport({ service: "gmail", auth: { user: cfg.user, pass: cfg.pass } });
         }
         await transport.sendMail({
-          from: (JSON.parse(fs.readFileSync(CONFIG, "utf-8"))).user,
+          from: getSMTPConfig().user,
           to: d.email,
           subject: "Contacto " + d.nombre,
           text: d.mensaje
