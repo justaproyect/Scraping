@@ -64,7 +64,7 @@ for (const file of files) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scraping <span style="color:#cc0000">Justa</span> - Campaña ${campanaName}</title>
+<title>Scraper - Campaña ${campanaName}</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
