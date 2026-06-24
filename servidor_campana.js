@@ -143,6 +143,30 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (ruta === "/api/smtp-config" && req.method === "GET") {
+    var cfg = getSMTPConfig();
+    res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
+    res.end(JSON.stringify({ user: cfg ? cfg.user : "", configured: !!cfg }));
+    return;
+  }
+
+  if (ruta === "/api/smtp-config" && req.method === "POST") {
+    var cuerpo = "";
+    req.on("data", function(c) { cuerpo += c; });
+    req.on("end", function() {
+      try {
+        var d = JSON.parse(cuerpo);
+        if (d.pass && d.pass.length > 3) {
+          fs.writeFileSync(CONFIG, JSON.stringify({ user: d.user || "", pass: d.pass }));
+          transport = null;
+        }
+      } catch(e) {}
+      res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
+      res.end(JSON.stringify({ ok: true }));
+    });
+    return;
+  }
+
   if (ruta === "/api/reiniciar") {
     fs.writeFileSync(PROGRESS, "{}");
     estado = { total: 0, enviados: 0, fallos: 0, pendientes: 0, activo: false, actual: "" };
@@ -194,10 +218,13 @@ const server = http.createServer((req, res) => {
 var PORT = process.env.PORT || 4567;
 server.listen(PORT, () => {
   console.log("Servidor en puerto: " + PORT);
+  var smtpOk = getSMTPConfig() ? "SI" : "NO";
+  console.log("Config SMTP: " + smtpOk);
   console.log("Api:");
-  console.log("  GET /api/estado        — progreso actual");
+  console.log("  GET /api/estado          — progreso actual");
   console.log("  GET /api/iniciar?batch=N — iniciar envio SMTP");
-  console.log("  GET /api/detener       — detener envio");
-  console.log("  GET /api/reiniciar     — borrar progreso");
-  console.log("  GET/POST /api/config   — leer/cambiar objetivo de campana");
+  console.log("  GET /api/detener         — detener envio");
+  console.log("  GET /api/reiniciar       — borrar progreso");
+  console.log("  GET/POST /api/config     — leer/cambiar objetivo de campana");
+  console.log("  GET/POST /api/smtp-config— leer/configurar credenciales SMTP");
 });

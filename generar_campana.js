@@ -181,6 +181,11 @@ input#search:focus{border-color:#ff2222}
   <div class="row"><label>Ubicacion</label><input type="text" id="cfgUbicacion" style="flex:1;padding:8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:13px;font-family:inherit;outline:none"></div>
   <div class="row"><label>Propuesta de valor</label><textarea id="cfgValor" rows="2"></textarea></div>
   <div class="row"><label>Diferenciador</label><textarea id="cfgDiferencia" rows="2"></textarea></div>
+  <div class="row" style="margin-top:8px;border-top:1px solid #222;padding-top:8px">
+    <label style="min-width:80px;font-size:10px">SMTP User</label><input type="text" id="smtpUser" placeholder="usuario@gmail.com" style="flex:1;padding:6px 8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:12px;font-family:inherit;outline:none">
+    <label style="min-width:40px;font-size:10px">Pass</label><input type="password" id="smtpPass" placeholder="App Password" style="flex:1;padding:6px 8px;background:#111;border:1px solid #333;border-radius:3px;color:#e0e0e0;font-size:12px;font-family:inherit;outline:none">
+    <span id="smtpCfgStatus" style="color:#555;font-size:10px"></span>
+  </div>
   <div class="row" style="margin-top:12px">
     <button class="btn-sv" id="btnGuardarCfg" onclick="guardarCfg()">Guardar y regenerar</button>
     <span class="st" id="cfgStatus"></span>
@@ -267,6 +272,15 @@ function cargarCfg() {
     document.getElementById("cfgDiferencia").value = d.diferenciador || "";
   };
   r.send();
+  var r2 = new XMLHttpRequest();
+  r2.open("GET", "/api/smtp-config", true);
+  r2.onload = function() {
+    var d = JSON.parse(r2.responseText);
+    document.getElementById("smtpUser").value = d.user || "";
+    document.getElementById("smtpCfgStatus").textContent = d.configured ? "Conectado" : "No configurado";
+    document.getElementById("smtpCfgStatus").style.color = d.configured ? "#3b3" : "#833";
+  };
+  r2.send();
 }
 function guardarCfg() {
   var btn = document.getElementById("btnGuardarCfg");
@@ -289,6 +303,14 @@ function guardarCfg() {
     propuesta_valor: document.getElementById("cfgValor").value,
     diferenciador: document.getElementById("cfgDiferencia").value
   }));
+  var smtpUser = document.getElementById("smtpUser").value.trim();
+  var smtpPass = document.getElementById("smtpPass").value;
+  if (smtpUser || smtpPass) {
+    var rs = new XMLHttpRequest();
+    rs.open("POST", "/api/smtp-config", true);
+    rs.setRequestHeader("Content-Type", "application/json");
+    rs.send(JSON.stringify({ user: smtpUser, pass: smtpPass }));
+  }
 }
 function mostrarPago() {
   alert("Acceso completo por pago unico.\\n\\nEscribeme al WhatsApp para activarlo:\\n+57 301 336 1371");
