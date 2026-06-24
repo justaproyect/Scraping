@@ -1,0 +1,15 @@
+{
+  "name": "scraping-justa",
+  "version": "1.0.0",
+  "description": "Scraping Justa - Multi-channel campaign sender",
+  "main": "servidor_campana.js",
+  "scripts": {
+    "start": "node servidor_campana.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "nodemailer": "^9.0.1"
+  }
+}

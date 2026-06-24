@@ -1,0 +1,5 @@
+node_modules/
+__pycache__/
+*.pyc
+.gmail_progress.json
+datos/smtp_config.json

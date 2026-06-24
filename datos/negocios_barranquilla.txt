@@ -1,0 +1,329 @@
+[almacenes grandes        ] Distribuidora Gonzalez                        | 300 5795255         
+[almacenes grandes        ] Centro Comercial El Paseo                     |                     
+[almacenes grandes        ] Alkomprar Barranquilla                        | 01-800-0946000      
+[almacenes grandes        ] CC Tierra Santa Calle 72                      | 300 1135435         
+[almacenes grandes        ] Outlet Continente S.A                         | (605) 3531110       
+[almacenes grandes        ] Centro Comercial Gran Centro                  | (605) 3402666       
+[almacenes grandes        ] SURTI MAYORISTA MACARENA                      | 305 3696767         
+[bancos                   ] Microcrédito para negocio | Mibanco - Barranquilla | Solicita tu crédito | 320 3504004 ext. 50301
+[bancos                   ] Banco Av Villas                               | 01-800-0518000      
+[bancos                   ] Banco de la República                         | (605) 3716666       
+[bancos                   ] DAVIVIENDA                                    |                     
+[bancos                   ] Sucursal Bancolombia                          | 01-800-0912345      
+[bancos                   ] Banco Av Villas                               | 01-800-0518000      
+[bancos                   ] Carrera 38 | Banco de Bogotá                  | (601) 3820000       
+[bancos                   ] Banco Caja Social                             | (605) 3457203       
+[bancos                   ] BBVA                                          |                     
+[bancos                   ] Scotiabank Colpatria                          |                     
+[bancos                   ] Financiera Progressa                          | 01-800-0129680      
+[bancos                   ] BANCOLOMBIA CALLE 70                          | (605) 3850976       
+[bancos                   ] Banco Av Villas                               | 01-800-0518000      
+[bancos                   ] Cajero BBVA LOS ANDES                         | (605) 3659010       
+[bancos                   ] Bancolombia                                   |                     
+[bancos                   ] BANCOLOMBIA SAN NICOLAS BARRANQUILLA          | (605) 3850716       
+[bancos                   ] Banco Popular                                 | (601) 6063456       
+[bancos                   ] Scotiabank Colpatria                          |                     
+[bancos                   ] La Cordialidad | Banco de Bogotá              | (601) 3820000       
+[bodegas industriales     ] CYSI S.A.S                                    | 315 6943240         
+[bodegas industriales     ] Parque Logístico BAQ                          |                     
+[bodegas industriales     ] Parque Logístico California -D1 SAS           |                     
+[bodegas industriales     ] ZILOG Parque Industrial                       | 321 6705512         
+[bodegas industriales     ] Lógika Vía 40                                 | (601) 4823299       
+[bodegas industriales     ] ZOFIA | Zona Franca Internacional del Atlántico | Lotes y bodegas industriales | 300 8910748         
+[bodegas industriales     ] Parque Industrial Stock Caribe                | 323 5750474         
+[bodegas industriales     ] Europark                                      | 321 5956757         
+[bodegas industriales     ] OIKOS Storage Minibodegas - Barranquilla      |                     
+[bodegas industriales     ] Parque Logístico e Industrial Green Park Atlántico | 321 8257921         
+[bodegas industriales     ] Bodega                                        |                     
+[bodegas industriales     ] Parque Industrial Zona Express                |                     
+[bodegas industriales     ] Centro Empresarial Marysol                    | (605) 3311134       
+[bodegas industriales     ] Centro industrial circunvalar                 |                     
+[bodegas industriales     ] Stock Caribe Centro Logístico                 | 323 5750474         
+[bodegas industriales     ] MASTERBOX                                     | 313 7281700         
+[bodegas industriales     ] Stock Caribe                                  |                     
+[bodegas industriales     ] bodegas via 40                                |                     
+[bodegas industriales     ] METROPARQUE INDUSTRIAL Y COMERCIAL DEL CARIBE | (605) 3288902       
+[centros comerciales      ] Centro Comercial Mallplaza Buenavista         | (601) 5877775       
+[centros comerciales      ] Centro Comercial Buenavista                   | (605) 3091815       
+[centros comerciales      ] Viva Centro Comercial                         | (605) 3868717       
+[centros comerciales      ] Portal del Prado Centro Comercial             | (605) 3148672       
+[centros comerciales      ] Centro Comercial UNICO Outlet                 | (605) 3855186       
+[centros comerciales      ] Centro Comercial Villa Country                | (605) 3354742       
+[centros comerciales      ] C.C Blue Gardens - Barranquilla               | (605) 3776711       
+[centros comerciales      ] Centro Comercial Miramar                      | (605) 3663111       
+[centros comerciales      ] Centro Comercial Parque Alegra                |                     
+[centros comerciales      ] Las Dunas Open Parque Comercial               | 320 5423827         
+[centros comerciales      ] Centro Comercial Plaza del Parque             | (605) 3854935       
+[centros comerciales      ] Centro Comercial Buenavista II                | 301 5534551         
+[centros comerciales      ] Centro Comercial Gran Boulevard               |                     
+[centros comerciales      ] Centro Comercial Colombia                     |                     
+[centros comerciales      ] Centro Comercial Americano                    | 322 3973668         
+[centros comerciales      ] Centro Comercial Carnaval                     | 324 3280408         
+[centros comerciales      ] Centro Comercial Panorama                     | (605) 3277624       
+[centros comerciales      ] Centro Comercial Palmas Mall                  | 3049842             
+[centros comerciales      ] Centro Comercial Metropolitano                | (605) 3625533       
+[centros comerciales      ] Centro Comercial Metrocentro                  | (605) 3325486       
+[clinicas                 ] Clínica General del Norte Sede Los Andes      | (605) 3869898       
+[clinicas                 ] Clinica General del Norte                     | (605) 3091666       
+[clinicas                 ] Clínica Centro                                | (605) 3185282       
+[clinicas                 ] Clinica Iberoamerica                          | (605) 3319424       
+[clinicas                 ] Clínica San Martín Barranquilla Ltda.         | (605) 3133990       
+[clinicas                 ] Clínica La Merced IPS                         | (605) 6478402       
+[clinicas                 ] Clinica Santa Ana de Dios                     | 324 4154792         
+[clinicas                 ] Clínica Murillo                               | (605) 3092138       
+[clinicas                 ] Clinica El Carmen                             | (605) 3696709       
+[clinicas                 ] Clínica La Asunción                           | (605) 3714546       
+[clinicas                 ] Clínica de la Costa                           |                     
+[clinicas                 ] Clínica del Caribe                            | (605) 3305200       
+[clinicas                 ] Clínica Reina Catalina - Barranquilla         | (605) 3319535       
+[clinicas                 ] Clínica El Prado                              | (605) 3678900       
+[clinicas                 ] Clínica General San Diego S.A.S               | 318 3493523         
+[clinicas                 ] Clínica San Ignacio Ltda                      | (605) 3852438 ext. 216
+[clinicas                 ] Clínica Santa Mónica                          | 318 3417954         
+[clinicas                 ] Clínica Altos de San Vicente                  | 05-367 4400         
+[clinicas                 ] Clínica El Carmen EPS Sanitas                 |                     
+[clinicas                 ] Clínica La Victoria - Consulta Externa        | (605) 3111109       
+[colegios                 ] INSTITUCIÓN EDUCATIVA DISTRITAL MARÍA INMACULADA | (605) 3650062       
+[colegios                 ] Colegio Sagrada Familia                       | 321 5386665         
+[colegios                 ] COLEGIO HISPANO AMERICANO                     | (605) 3462072       
+[colegios                 ] Colegio Javier Sánchez                        | (605) 3652912       
+[colegios                 ] Instituto La Salle Bilingual School Barranquilla | 3860182             
+[colegios                 ] I.E.D. Alexander Von Humboldt                 |                     
+[colegios                 ] Colegio de Barranquilla CODEBA                |                     
+[colegios                 ] Colegio Americano de Barranquilla             | (605) 3225100       
+[colegios                 ] Institución Educativa Distrital Olaya         | (605) 3657614       
+[colegios                 ] Colegio Antonia Santos                        | (605) 3030725       
+[colegios                 ] Institución Educativa Distrital Técnica Bilingue Jorge Nicolas Abello |                     
+[colegios                 ] INSTITUTO ARIANO                              | 313 5120969         
+[colegios                 ] Colegio Inca                                  | (605) 3697600       
+[colegios                 ] Institucion Educativa Distrital Ciudadela 20 de Julio | (605) 3627100       
+[colegios                 ] Colegio Distrital Hogar Mariano               | 300 2790922         
+[colegios                 ] Colegio Sofía Camargo de Lleras               | (605) 3795122       
+[colegios                 ] IED Carlos Meisel Barranquilla                | (605) 3525476       
+[colegios                 ] Institución Educativa Distrital El Silencio   | (605) 3659527       
+[colegios                 ] Institución Educativa Distrital El Paraíso    |                     
+[colegios                 ] Institución Educativa Distrital Bilingüe Nueva Granada |                     
+[concesionarios           ] Concesionario Vardí Autos Usados | Barranquilla Alto Prado | 310 5816522         
+[concesionarios           ] JyV Autos                                     | 301 6502684         
+[concesionarios           ] Massy Motors Costa                            | 300 9126226         
+[concesionarios           ] Todo Auto 53                                  | 315 7384660         
+[concesionarios           ] Guido Autos                                   | 300 4408747         
+[concesionarios           ] Country Motors CALLE 77                       | (605) 3758322       
+[concesionarios           ] Autoluxury                                    | 319 5830905         
+[concesionarios           ] DISTRICAR                                     | (605) 3705356       
+[concesionarios           ] AUTOCOM BARRANQUILLA                          | 322 9035322         
+[concesionarios           ] Autolitoral Chevrolet Concesionario Prado     | 300 9121100         
+[concesionarios           ] Kia Barranquilla sede Catedral - Automotores Fujiyama | (605) 3319747       
+[concesionarios           ] Vitrinas Volkswagen Audi SEAT CUPRA AutoBerlín | 310 3157333         
+[concesionarios           ] Renault Barranquilla Juanautos vía 40         | 300 9121827         
+[concesionarios           ] Country Motors - Chevrolet                    |                     
+[concesionarios           ] Autos 79                                      | 300 7330014         
+[concesionarios           ] Autos Curiba                                  | 312 6123552         
+[concesionarios           ] Concesionario Honda Autolaurel Calle 77       | (605) 3682081       
+[concesionarios           ] Kia Barranquilla sede Vía 40 - Automotores Fujiyama | (605) 3319747       
+[concesionarios           ] USADOS LA 43                                  | (605) 3689138       
+[concesionarios           ] RED AUTOMOTRIZ                                | 313 5017096         
+[edificios de oficinas    ] Edificio del D.A.S. Barranquilla              | 302 3718169         
+[edificios de oficinas    ] Edificio Miss Universo                        | 302 4289213         
+[edificios de oficinas    ] Edificio Ocean Tower Business Center          | (601) 5879530       
+[edificios de oficinas    ] Centro Empresarial Green Towers               |                     
+[edificios de oficinas    ] Centro Empresarial Las Américas               |                     
+[edificios de oficinas    ] Centro Ejecutivo II                           |                     
+[edificios de oficinas    ] Torres del Atlántico                          |                     
+[edificios de oficinas    ] Centro Empresarial Las Américas III           |                     
+[edificios de oficinas    ] Edificio Executive Trade Center               |                     
+[edificios de oficinas    ] Quantum Tower                                 |                     
+[edificios de oficinas    ] Edificio Rumie                                |                     
+[edificios de oficinas    ] Centro Comercial Prado Office Center          | 313 7398904         
+[edificios de oficinas    ] Edificio Inverfin                             | 3585184             
+[edificios de oficinas    ] Torre atlántica empresarial                   | 318 8645163         
+[edificios de oficinas    ] Casa O Coworking                              | 314 5867685         
+[edificios de oficinas    ] Edificio Fincar                               | (605) 3682734       
+[edificios de oficinas    ] Edificio Ithiel                               | 300 6022578         
+[edificios de oficinas    ] World Trade Center                            | 3669450             
+[edificios de oficinas    ] Bc Empresarial                                | (605) 3855017       
+[edificios de oficinas    ] Edificio Boracay                              | 316 4541294         
+[fabricas                 ] Fabrica de productos Saysa S.A.S.             | (605) 3822909       
+[fabricas                 ] Italcol Barranquilla                          | (605) 3852347       
+[fabricas                 ] Distribuidora Casarosa                        | 315 6984600         
+[fabricas                 ] CRIVANO INTERNACIONAL S.A.S                   | 300 5548035         
+[fabricas                 ] INDUSTRIA PLÁSTICA DEL SUR                    | (605) 3265582       
+[fabricas                 ] Fábrica De Hielo Barranquilla Ltda. Planta La 21 | (605) 3461808       
+[fabricas                 ] Fabrica De Hielo Orquidea                     | 318 3441639         
+[fabricas                 ] Fábrica de Cultura                            | 300 8124193         
+[fabricas                 ] Fábrica de Calzado TRENTO                     | 3238755             
+[fabricas                 ] Fabricaciones K-tex Barranquilla              | 315 7444595         
+[fabricas                 ] Fábrica de Hielo ICEBLU, S.A.S                | 312 3950809         
+[fabricas                 ] Carnecol San Felipe                           | (605) 3049898       
+[fabricas                 ] UNIBOL S.A.S.                                 | (605) 3366700       
+[fabricas                 ] Fábrica de Avisos                             | 300 6966127         
+[fabricas                 ] FÁBRICA CLUB VIP                              | 310 6651766         
+[gimnasios                ] AF GYM                                        | (605) 3601832       
+[gimnasios                ] Smarfit Gym Éxito San Francisco               |                     
+[gimnasios                ] MegaFit Gym                                   | 300 5007851         
+[gimnasios                ] Toms Gym                                      |                     
+[gimnasios                ] Sport life Centro de Entrenamiento            | 302 3642551         
+[gimnasios                ] Gimnasio Angelito Fitness                     | 302 3552083         
+[gimnasios                ] Smart Fit - Único Barranquilla                |                     
+[gimnasios                ] El Bunker Gym                                 |                     
+[gimnasios                ] Gym Power mind                                | 324 6044257         
+[gimnasios                ] Gym KAPS                                      |                     
+[gimnasios                ] Gym Sports                                    |                     
+[gimnasios                ] Xtreme Power Gym                              | 301 4516223         
+[gimnasios                ] Gimnasio Mandy                                |                     
+[gimnasios                ] Gymnasio MASTER FIT WELLNES CENTER            |                     
+[gimnasios                ] Smart Fit - Éxito Murillo                     |                     
+[gimnasios                ] FITNESS BY OAKLAND                            | 300 2132726         
+[gimnasios                ] Bodytech Recreo                               | 01-800-0182639      
+[gimnasios                ] Gimnasio Mundo Fit | Sede San Jose | El mejor gimnasio de Barranquilla | 300 2442031         
+[gimnasios                ] Halcon Gym                                    | (605) 3396937       
+[gimnasios                ] Smart Fit - Portal del Prado                  |                     
+[grandes empresas         ] Cea-Compañía Envasadora del Atlántico S.A.S.  | 3448292             
+[grandes empresas         ] Comercializa HFC S.A.S                        |                     
+[grandes empresas         ] Tecnoglass S.A.S.                             | (605) 3734000       
+[grandes empresas         ] INCOMAQ LTDA                                  | (605) 3432945       
+[grandes empresas         ] C.I. Prodeco S.A.                             | (605) 3855599       
+[grandes empresas         ] Corpacero S.A.S                               | (605) 3851515       
+[grandes empresas         ] Industrias Cannon de Colombia S.A.            | (605) 3856000       
+[grandes empresas         ] Trading Group International                   | (605) 3360410       
+[grandes empresas         ] APC BARRANQUILLA N° 1                         | 310 6619849         
+[grandes empresas         ] Grupo ESS Barranquilla                        | 318 3160699         
+[grandes empresas         ] Zona Franca de Barranquilla                   | (605) 3301430       
+[grandes empresas         ] Pah Venture                                   | 302 4638964         
+[grandes empresas         ] Logistica Laboral                             | 318 5166257         
+[grandes empresas         ] Hada international                            | (605) 3304005       
+[grandes empresas         ] Procaps S.A.                                  | (605) 3854321       
+[grandes empresas         ] SOLIWEL LTDA                                  | 321 7538354         
+[grandes empresas         ] M7 Producción y Logística                     | 302 6252475         
+[grandes empresas         ] Atlantic Quantum Innovations                  | (605) 3852400       
+[grandes empresas         ] SENTEL LTDA                                   |                     
+[grandes empresas         ] Parque Comercial é Industrial Vía 40          | (605) 3444206       
+[hospitales               ] E.S.E Universitaria del Atlántico Sede de Alta Complejidad | (605) 3319538       
+[hospitales               ] Nuevo Hospital General de Barranquilla        | (605) 3797582       
+[hospitales               ] Camino Nazareth                               | (605) 3672200       
+[hospitales               ] Cruz Roja Colombiana Seccional Atlántico      | (605) 3695320       
+[hospitales               ] Hospital La Manga                             | (605) 3482176       
+[hospitales               ] Camino Bosque de María                        | 350 8849128         
+[hospitales               ] Hospital Universidad del Norte                | (605) 3858131       
+[hospitales               ] Paso Buena Esperanza                          |                     
+[hospitales               ] C.A.M.I.N.O MURILLO                           | (605) 3399500       
+[hospitales               ] Camino Universitario Distrital Adelita de Char | (605) 3672200       
+[hospitales               ] Hospital Niño Jesús                           | 313 8109236         
+[hospitales               ] Sura Urgencias Cordialidad                    | (605) 3197901       
+[hospitales               ] CLINICA GENERAL EL RECREO                     | (605) 3077159       
+[hoteles                  ] Hotel Dann Carlton Barranquilla               | (605) 3677777       
+[hoteles                  ] ibis budget Barranquilla                      | (605) 3100838       
+[hoteles                  ] ibis Barranquilla                             | (605) 3854060       
+[hoteles                  ] Hotel San Marcos                              | 310 7347890         
+[hoteles                  ] Hotel Caribe Plaza Barranquilla               | 322 5428091         
+[hoteles                  ] HOTEL BARRANQUILLA INN                        | (605) 3187523       
+[hoteles                  ] Hotel Casa Rueda                              | 316 3216600         
+[hoteles                  ] Hotel Platinum Barranquilla                   | 323 3449845         
+[hoteles                  ] Hotel Marcarí                                 | 304 6009938         
+[hoteles                  ] Hotel Costa Mar                               | 310 5717778         
+[hoteles                  ] Hotel BH Barranquilla                         | (605) 3872877       
+[hoteles                  ] Hotel Genova                                  | (605) 3853980       
+[hoteles                  ] Hotel Casa Ballesteros                        | (605) 3681212       
+[hoteles                  ] Hotel Faranda Express Puerta del Sol Barranquilla, a member of Radisson Individuals | 315 7799595         
+[hoteles                  ] Hampton by Hilton Barranquilla                | (605) 3860101       
+[hoteles                  ] Hotel Monterrey                               | 301 6115126         
+[hoteles                  ] Hilton Garden Inn Barranquilla                | (605) 3860111       
+[hoteles                  ] Hotel Barranquilla Plaza                      | 3610000             
+[hoteles                  ] Hotel NH Collection Barranquilla Smartsuites Royal | 313 2464228         
+[hoteles                  ] Barranquilla Marriott Hotel                   | (605) 3111115       
+[industrias               ] Industrias Plasticas del Caribe sa            | (605) 3709878       
+[industrias               ] INDUSTRIAS GUINOVART SAS                      | 314 5410875         
+[industrias               ] INDUSTRIAS EL MANANTIAL BARRANQUILLA          | 310 6236175         
+[industrias               ] INDUSTRIAS ROMERO & COMPAÑIA                  | (605) 3722797       
+[industrias               ] Industrias Famapan del Caribe                 | 302 2953638         
+[industrias               ] Industrias Metalmad De Colombia S.a.s.        |                     
+[industrias               ] Industrias Plásticas Zarco Plast              |                     
+[industrias               ] Industrias Cruz Y Cañon Lmtda. muebles metalicos y carpinteria. | 320 5317282         
+[industrias               ] Industrias SEDAL S.A.                         | (605) 3531499       
+[industrias               ] INDUSTRIAS METALMECANICAS tecniaceros         | (605) 3709110       
+[industrias               ] Industrias Cruz Metalmecanica S.A.S           |                     
+[industrias               ] BARRANQUILLA INDUSTRIAL DE CONFECCIONES SA    | (605) 3851366       
+[industrias               ] INDUSTRIAS PROFIBRA LTDA                      | (605) 3533031       
+[industrias               ] Industrias FAMA SAS                           | (605) 3533988       
+[industrias               ] INDUSTRIAS METALICAS EFA S.A.S                | (605) 3795609       
+[industrias               ] HR INDUSTRIA S.A.S.                           | (605) 3401583       
+[industrias               ] Litoplas                                      | (605) 3851955       
+[moteles                  ] Motel Carpe Diem Barrio Abajo                 | (605) 3702480       
+[moteles                  ] Hotel ByHours Astor                           | 300 3589279         
+[moteles                  ] Hotel ByHours Circunvalar                     | 310 2385134         
+[moteles                  ] Motel Sahara                                  | 313 5899913         
+[moteles                  ] La Calera Fenix                               | 315 7377220         
+[moteles                  ] HOTEL UNIVERSOS - MOTEL LA LUNA               | 315 8834141         
+[moteles                  ] Puerta del Sol                                |                     
+[moteles                  ] Hotel Ayenda Skall 1319                       | 315 7985380         
+[moteles                  ] Hotel las nubes                               | 314 7047230         
+[moteles                  ] Hotel El Diamante                             | 316 4539362         
+[moteles                  ] Hotel 56 Avenue                               | 318 7720064         
+[moteles                  ] Hostal El Recreo                              | 301 6900507         
+[moteles                  ] Hospedaje Altamira                            | 321 6381994         
+[moteles                  ] Hotel Via 40                                  | 321 5547828         
+[moteles                  ] Hotel Caribe 79                               | 310 3547979         
+[moteles                  ] hotel danes                                   | (605) 3413280       
+[moteles                  ] Hotel El Camino                               | 314 6690025         
+[moteles                  ] Hotel - Hostal Lumar                          | 314 7557585         
+[moteles                  ] Hotel Fontamar 72                             | 300 4103072         
+[restaurantes             ] El Celler                                     | 311 3757575         
+[restaurantes             ] El Patio De La 21                             | 300 6821618         
+[restaurantes             ] Restaurante Palo de Mango                     | 304 6434737         
+[restaurantes             ] Restaurante Ébano                             | 304 6104739         
+[restaurantes             ] Mistura Barranquilla                          | 304 5677632         
+[restaurantes             ] Varadero                                      | 317 8933016         
+[restaurantes             ] Storia D'Amore Barranquilla                   | 300 9134441         
+[restaurantes             ] Casa Tua Restaurante Bar                      |                     
+[restaurantes             ] Restaurante Rojo Madrid                       | 315 5696140         
+[restaurantes             ] Smoke House Restaurante                       | 313 3979803         
+[restaurantes             ] Botero's Barranquilla                         | 301 1988055         
+[restaurantes             ] Olio RistoBar                                 | 315 4665657         
+[restaurantes             ] Casa en el Aire Barranquilla                  | 312 5688403         
+[restaurantes             ] Restaurante Sabina                            | 318 3677865         
+[restaurantes             ] Devoto Restaurante                            | 320 3422136         
+[restaurantes             ] La Empírica Cocina De Autor                   | 316 2763780         
+[restaurantes             ] L’eden GastroBar                              | 300 6231281         
+[restaurantes             ] Restaurante la Potra                          | 304 6795093         
+[restaurantes             ] La Terraza de la Casa                         | (605) 3571992       
+[restaurantes             ] Cuzco Cocina Peruana                          | (605) 3356650       
+[supermercados            ] Jumbo Centro Comercial Americano              | (605) 7860401       
+[supermercados            ] Olímpica La 21                                | (601) 3460872       
+[supermercados            ] Éxito Murillo - Barranquilla                  | 01-800-0428800      
+[supermercados            ] Éxito San Francisco - Barranquilla            | 01-800-0428800      
+[supermercados            ] Olímpica Calle 68                             | 314 6182858         
+[supermercados            ] El 9cito                                      | (605) 3657177       
+[supermercados            ] Tiendas Ara - Nueva Granada                   | 01-800-0521888      
+[supermercados            ] Megatiendas - Sede Boston (Barranquilla)      | 310 7328645         
+[supermercados            ] Éxito San Blas Barranquilla                   | 01-800-0428800      
+[supermercados            ] Tiendas D1                                    |                     
+[supermercados            ] Exito Viva Barranquilla                       | 01-800-0428800      
+[supermercados            ] Tiendas D1 Pumarejo                           |                     
+[supermercados            ] Éxito Panorama Barranquilla                   | 01-800-0428800      
+[supermercados            ] Megatiendas - Unico (Barranquilla)            | (605) 3093090       
+[supermercados            ] Tiendas Ara                                   | 01-800-0521888      
+[supermercados            ] Tiendas Ara El Carmen                         | 01-800-0521888      
+[supermercados            ] Jumbo Altos del Prado                         | (605) 3618000       
+[supermercados            ] PriceSmart                                    |                     
+[supermercados            ] Éxito Buenavista Wow - Barranquilla           | 01-800-0428800      
+[supermercados            ] Tiendas Ara El Silencio                       |                     
+[universidades            ] Universidad Autónoma del Caribe               | (605) 3966980       
+[universidades            ] Universidad Metropolitana de Barranquilla     |                     
+[universidades            ] Universidad del Atlántico Sede Centro         | (605) 3853002       
+[universidades            ] Universidad De La Costa, CUC                  | (605) 3225498       
+[universidades            ] CUL CORPORACION UNIVERSITARIA LATINOAMERICANA | 302 2106952         
+[universidades            ] Institución Universitaria de Barranquilla IUB | (605) 3112370       
+[universidades            ] Corporación Universitaria Americana           | (605) 3851027       
+[universidades            ] Universidad Libre - Seccional Barranquilla, Sede Principal | (605) 3673800       
+[universidades            ] Universidad Sergio Arboleda - Campus Barranquilla | (605) 3860096       
+[universidades            ] Universidad del Norte                         | (605) 3509509       
+[universidades            ] Institución Universitaria de Barranquilla - Sede Centro |                     
+[universidades            ] Universidad americana                         |                     
+[universidades            ] Universidad Libre Sede Centro                 | (605) 3851057       
+[universidades            ] Corporación Universitaria Empresarial de Salamanca Sede 1 Sur Cordialidad | 302 2708482         
+[universidades            ] Corporación de Educación Superior del Litoral | (605) 3856505       
+[universidades            ] Universidad Simón Bolívar Sede 3 - Universidad Barranquilla | (605) 3185510       
+[universidades            ] Sede Posgrados Unibarranquilla                |                     
+[universidades            ] Universidad del Tolima-CAT Barranquilla       | 300 4626636         
+[universidades            ] UNIVERSIDAD SANTO TOMÁS                       | 317 6482253         
+[universidades            ] Universidad Metropolitana Sede Laboratorio    |                     

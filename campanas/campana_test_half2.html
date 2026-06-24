@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scraping - Campaña barranquilla</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0d0d0d; padding: 24px; color: #e0e0e0; }
+  .header { background: #111; border-bottom: 2px solid #222; color: white; padding: 28px 24px; border-radius: 8px; margin-bottom: 24px; }
+  .header h1 { font-size: 20px; font-weight: 600; color: #fff; }
+  .header p { color: #888; font-size: 13px; margin-top: 4px; }
+  .stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat-card { background: #111; padding: 16px 20px; border-radius: 6px; border: 1px solid #222; flex: 1; text-align: center; min-width: 90px; }
+  .stat-card .num { font-size: 22px; font-weight: 600; color: #ff2222; }
+  .stat-card .label { font-size: 11px; color: #777; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+  .search-box { margin-bottom: 16px; }
+  .search-box input { width: 100%; padding: 10px 14px; border: 1px solid #222; border-radius: 4px; font-size: 13px; background: #111; color: #e0e0e0; outline: none; }
+  .search-box input:focus { border-color: #ff2222; }
+  .search-box input::placeholder { color: #555; }
+  table { width: 100%; border-collapse: collapse; background: #111; border-radius: 6px; overflow: hidden; border: 1px solid #222; }
+  th { background: #111; color: #999; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #222; }
+  td { padding: 10px 14px; border-bottom: 1px solid #181818; font-size: 13px; color: #e0e0e0; }
+  tr:hover { background: #181818; }
+  .tipo-header td { background: #0a0a0a; font-weight: 600; color: #ff3333; padding: 6px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .servicios { color: #777; font-size: 12px; max-width: 200px; }
+  .btn { display: inline-block; background: transparent; color: #ff3333; padding: 4px 12px; border-radius: 3px; text-decoration: none; font-size: 12px; font-weight: 500; border: 1px solid #ff3333; }
+  .btn:hover { background: #ff2222; color: white; }
+  .btn-preview { display: inline-block; background: transparent; color: #888; padding: 4px 12px; border-radius: 3px; text-decoration: none; font-size: 12px; border: 1px solid #333; }
+  .btn-preview:hover { border-color: #666; color: #ccc; }
+  .sin-telefono { margin-top: 20px; padding: 14px; background: #111; border-radius: 4px; font-size: 13px; border: 1px solid #222; color: #777; }
+  .sin-telefono details { cursor: pointer; }
+  .sin-telefono li { margin: 2px 0 2px 18px; color: #555; font-size: 12px; }
+  .activo { background: #1a0000 !important; border-left: 3px solid #ff3333; }
+  .enviado td { opacity: 0.3; }
+  .enviado .col-nombre::after { content: " enviado"; color: #555; font-size: 10px; font-weight: 500; margin-left: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .mass-bar { background: #111; border-radius: 6px; padding: 20px; margin-bottom: 20px; display: none; border: 1px solid #222; }
+  .mass-bar.activo { display: block; }
+  .mass-bar .progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .mass-bar .progress-text { font-size: 14px; font-weight: 500; color: #e0e0e0; }
+  .mass-bar .progress-bar { flex: 1; height: 4px; background: #222; border-radius: 2px; overflow: hidden; }
+  .mass-bar .progress-bar div { height: 100%; background: #ff3333; border-radius: 2px; width: 0%; transition: width 0.3s; }
+  .mass-bar .current-info { background: #0a0a0a; padding: 14px 16px; border-radius: 4px; margin-bottom: 16px; border: 1px solid #1a1a1a; }
+  .mass-bar .current-info .label { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .mass-bar .current-info .name { font-size: 15px; font-weight: 600; margin: 4px 0 2px; color: #fff; }
+  .mass-bar .current-info .detail { font-size: 12px; color: #777; }
+  .mass-bar .actions { display: flex; gap: 8px; }
+  .mass-bar .actions button { flex: 1; padding: 10px; border: none; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; }
+  .mass-bar .actions button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn-next { background: #cc0000; color: white; }
+  .btn-next:hover:not(:disabled) { background: #ff2222; }
+  .btn-stop { background: #181818; color: #888; border: 1px solid #222 !important; }
+  .btn-stop:hover:not(:disabled) { background: #222; color: #ccc; }
+  .btn-start { background: transparent; color: #ff3333; padding: 10px 20px; border: 1px solid #ff3333; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; }
+  .btn-start:hover { background: #ff2222; color: white; }
+  #btnEnviado, #btnSaltar { display: none; }
+  .stat-card:last-child { border-color: #ff3333; background: #111; }
+  .stat-card:last-child .num { display: none; }
+  .stat-card:last-child .label { margin-top: 0; }
+</head>
+<body>
+
+<div class="header">
+  <h1>Scraping — barranquilla</h1>
+  <p>329 negocios · 117 WhatsApp (celular 3XX) · 212 fijos/sin número</p>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="num">329</div><div class="label">Total negocios</div></div>
+  <div class="stat-card"><div class="num">117</div><div class="label">Con WhatsApp</div></div>
+  <div class="stat-card"><div class="num">18</div><div class="label">Tipos de negocio</div></div>
+  <div class="stat-card" style="background:#1a0000;border-color:#ff3333"><div class="num" style="color:white">+</div><div class="label"><button class="btn-start" onclick="iniciarMasivo()">Envio Masivo</button></div></div>
+</div>
+
+<div class="mass-bar" id="massBar">
+  <div class="progress">
+    <span class="progress-text" id="progressText">0 / 117</span>
+    <div class="progress-bar"><div id="progressFill"></div></div>
+  </div>
+  <div class="current-info" id="currentInfo">
+    <div class="label">Contacto actual:</div>
+    <div class="name" id="currentName">—</div>
+    <div class="detail" id="currentDetail">—</div>
+  </div>
+  <div class="actions">
+    <button class="btn-next" onclick="abrirWhatsApp()">Abrir WhatsApp</button>
+    <button class="btn-next" id="btnEnviado" onclick="marcarEnviado()" style="background:#cc0000">Ya envie</button>
+    <button class="btn-stop" onclick="saltar()" style="background:#444">Saltar</button>
+    <button class="btn-stop" onclick="detenerMasivo()" style="background:#333">Detener</button>
+    <button class="btn-stop" onclick="reiniciarProgreso()" style="background:#222;font-size:11px">Reiniciar</button>
+  </div>
+</div>
+
+<div class="search-box">
+  <input type="text" id="search" placeholder="Buscar por nombre, tipo o telefono..." onkeyup="filtrar()">
+</div>
+
+<table>
+<thead><tr><th>Nombre</th><th>Teléfono</th><th>Servicios</th><th>WhatsApp</th><th>Vista Previa</th></tr></thead>
+<tbody><tr data-idx="50">
+        <td class="col-nombre">MegaFit Gym</td>
+        <td>300 5007851</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573005007851?text=Hola%2C%20vi%20lo%20de%20MegaFit%20Gym.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573005007851?text=Hola%2C%20vi%20lo%20de%20MegaFit%20Gym.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="51">
+        <td class="col-nombre">Sport life Centro de Entrenamiento</td>
+        <td>302 3642551</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573023642551?text=Hola%2C%20vi%20lo%20de%20Sport%20life%20Centro%20de%20Entrenamiento.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573023642551?text=Hola%2C%20vi%20lo%20de%20Sport%20life%20Centro%20de%20Entrenamiento.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="52">
+        <td class="col-nombre">Gimnasio Angelito Fitness</td>
+        <td>302 3552083</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573023552083?text=Hola%2C%20vi%20lo%20de%20Gimnasio%20Angelito%20Fitness.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573023552083?text=Hola%2C%20vi%20lo%20de%20Gimnasio%20Angelito%20Fitness.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="53">
+        <td class="col-nombre">Gym Power mind</td>
+        <td>324 6044257</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573246044257?text=Hola%2C%20vi%20lo%20de%20Gym%20Power%20mind.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573246044257?text=Hola%2C%20vi%20lo%20de%20Gym%20Power%20mind.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="54">
+        <td class="col-nombre">Xtreme Power Gym</td>
+        <td>301 4516223</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573014516223?text=Hola%2C%20vi%20lo%20de%20Xtreme%20Power%20Gym.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573014516223?text=Hola%2C%20vi%20lo%20de%20Xtreme%20Power%20Gym.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="55">
+        <td class="col-nombre">FITNESS BY OAKLAND</td>
+        <td>300 2132726</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573002132726?text=Hola%2C%20vi%20lo%20de%20FITNESS%20BY%20OAKLAND.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573002132726?text=Hola%2C%20vi%20lo%20de%20FITNESS%20BY%20OAKLAND.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="56">
+        <td class="col-nombre">Gimnasio Mundo Fit | Sede San Jose | El mejor gimnasio de Barranquilla</td>
+        <td>300 2442031</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573002442031?text=Hola%2C%20vi%20lo%20de%20Gimnasio%20Mundo%20Fit.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573002442031?text=Hola%2C%20vi%20lo%20de%20Gimnasio%20Mundo%20Fit.%20En%20los%20gimnasios%20los%20aires%20trabajan%20al%20m%C3%A1ximo%20todo%20el%20d%C3%ADa.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20equipos%20split%2C%20cassette%20y%20piso%20techo.%20Tambi%C3%A9n%20instalaci%C3%B3n%20de%20sistemas%20nuevos%20con%20tecnolog%C3%ADa%20inverter%20para%20ahorro%20de%20energ%C3%ADa.%20%C2%BFLes%20sirve%20una%20cotizaci%C3%B3n%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr class="tipo-header"><td colspan="5">[GRANDES EMPRESAS] (6)</td></tr>
+<tr data-idx="57">
+        <td class="col-nombre">APC BARRANQUILLA N° 1</td>
+        <td>310 6619849</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573106619849?text=Hola%2C%20vi%20APC%20BARRANQUILLA%20N%C2%B0%201.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573106619849?text=Hola%2C%20vi%20APC%20BARRANQUILLA%20N%C2%B0%201.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="58">
+        <td class="col-nombre">Grupo ESS Barranquilla</td>
+        <td>318 3160699</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573183160699?text=Hola%2C%20vi%20Grupo%20ESS%20Barranquilla.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573183160699?text=Hola%2C%20vi%20Grupo%20ESS%20Barranquilla.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="59">
+        <td class="col-nombre">Pah Venture</td>
+        <td>302 4638964</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573024638964?text=Hola%2C%20vi%20Pah%20Venture.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573024638964?text=Hola%2C%20vi%20Pah%20Venture.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="60">
+        <td class="col-nombre">Logistica Laboral</td>
+        <td>318 5166257</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573185166257?text=Hola%2C%20vi%20Logistica%20Laboral.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573185166257?text=Hola%2C%20vi%20Logistica%20Laboral.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="61">
+        <td class="col-nombre">SOLIWEL LTDA</td>
+        <td>321 7538354</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573217538354?text=Hola%2C%20vi%20SOLIWEL%20LTDA.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573217538354?text=Hola%2C%20vi%20SOLIWEL%20LTDA.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="62">
+        <td class="col-nombre">M7 Producción y Logística</td>
+        <td>302 6252475</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573026252475?text=Hola%2C%20vi%20M7%20Producci%C3%B3n%20y%20Log%C3%ADstica.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573026252475?text=Hola%2C%20vi%20M7%20Producci%C3%B3n%20y%20Log%C3%ADstica.%20Les%20escribo%20porque%20ofrecemos%20servicios%20de%20mantenimiento%20de%20aires%20acondicionados%20para%20empresas%20en%20Barranquilla%20%E2%80%94%20splits%2C%20sistemas%20centrales%2C%20piso%20techo%2C%20cassettes.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20y%20proyectos%20de%20energ%C3%ADa%20solar.%20Si%20les%20interesa%20tener%20una%20propuesta%2C%20con%20gusto%20les%20comparto%20informaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr class="tipo-header"><td colspan="5">[HOSPITALES] (2)</td></tr>
+<tr data-idx="63">
+        <td class="col-nombre">Camino Bosque de María</td>
+        <td>350 8849128</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, Asesoria SST, CCTV / Seguridad Electronica</td>
+        <td><a href="https://wa.me/573508849128?text=Hola%2C%20vi%20lo%20de%20Camino%20Bosque%20de%20Mar%C3%ADa.%20Somos%20especialistas%20en%20climatizaci%C3%B3n%20para%20hospitales%20y%20centros%20de%20salud%20en%20Barranquilla.%20Hacemos%20mantenimiento%20de%20sistemas%20centrales%2C%20chillers%2C%20cassettes%20y%20splits%2C%20con%20planes%20que%20incluyen%20respuesta%20prioritaria.%20Si%20tienen%20equipos%20sin%20contrato%20de%20mantenimiento%20o%20necesitan%20revisi%C3%B3n%2C%20podemos%20ayudarles.%20%C2%BFLes%20parece%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573508849128?text=Hola%2C%20vi%20lo%20de%20Camino%20Bosque%20de%20Mar%C3%ADa.%20Somos%20especialistas%20en%20climatizaci%C3%B3n%20para%20hospitales%20y%20centros%20de%20salud%20en%20Barranquilla.%20Hacemos%20mantenimiento%20de%20sistemas%20centrales%2C%20chillers%2C%20cassettes%20y%20splits%2C%20con%20planes%20que%20incluyen%20respuesta%20prioritaria.%20Si%20tienen%20equipos%20sin%20contrato%20de%20mantenimiento%20o%20necesitan%20revisi%C3%B3n%2C%20podemos%20ayudarles.%20%C2%BFLes%20parece%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="64">
+        <td class="col-nombre">Hospital Niño Jesús</td>
+        <td>313 8109236</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, Asesoria SST, CCTV / Seguridad Electronica</td>
+        <td><a href="https://wa.me/573138109236?text=Hola%2C%20vi%20lo%20de%20Hospital%20Ni%C3%B1o%20Jes%C3%BAs.%20Somos%20especialistas%20en%20climatizaci%C3%B3n%20para%20hospitales%20y%20centros%20de%20salud%20en%20Barranquilla.%20Hacemos%20mantenimiento%20de%20sistemas%20centrales%2C%20chillers%2C%20cassettes%20y%20splits%2C%20con%20planes%20que%20incluyen%20respuesta%20prioritaria.%20Si%20tienen%20equipos%20sin%20contrato%20de%20mantenimiento%20o%20necesitan%20revisi%C3%B3n%2C%20podemos%20ayudarles.%20%C2%BFLes%20parece%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573138109236?text=Hola%2C%20vi%20lo%20de%20Hospital%20Ni%C3%B1o%20Jes%C3%BAs.%20Somos%20especialistas%20en%20climatizaci%C3%B3n%20para%20hospitales%20y%20centros%20de%20salud%20en%20Barranquilla.%20Hacemos%20mantenimiento%20de%20sistemas%20centrales%2C%20chillers%2C%20cassettes%20y%20splits%2C%20con%20planes%20que%20incluyen%20respuesta%20prioritaria.%20Si%20tienen%20equipos%20sin%20contrato%20de%20mantenimiento%20o%20necesitan%20revisi%C3%B3n%2C%20podemos%20ayudarles.%20%C2%BFLes%20parece%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr class="tipo-header"><td colspan="5">[HOTELES] (9)</td></tr>
+<tr data-idx="65">
+        <td class="col-nombre">Hotel San Marcos</td>
+        <td>310 7347890</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573107347890?text=Hola%2C%20vi%20lo%20de%20Hotel%20San%20Marcos.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573107347890?text=Hola%2C%20vi%20lo%20de%20Hotel%20San%20Marcos.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="66">
+        <td class="col-nombre">Hotel Caribe Plaza Barranquilla</td>
+        <td>322 5428091</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573225428091?text=Hola%2C%20vi%20lo%20de%20Hotel%20Caribe%20Plaza%20Barranquilla.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573225428091?text=Hola%2C%20vi%20lo%20de%20Hotel%20Caribe%20Plaza%20Barranquilla.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="67">
+        <td class="col-nombre">Hotel Casa Rueda</td>
+        <td>316 3216600</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573163216600?text=Hola%2C%20vi%20lo%20de%20Hotel%20Casa%20Rueda.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573163216600?text=Hola%2C%20vi%20lo%20de%20Hotel%20Casa%20Rueda.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="68">
+        <td class="col-nombre">Hotel Platinum Barranquilla</td>
+        <td>323 3449845</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573233449845?text=Hola%2C%20vi%20lo%20de%20Hotel%20Platinum%20Barranquilla.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573233449845?text=Hola%2C%20vi%20lo%20de%20Hotel%20Platinum%20Barranquilla.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="69">
+        <td class="col-nombre">Hotel Marcarí</td>
+        <td>304 6009938</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573046009938?text=Hola%2C%20vi%20lo%20de%20Hotel%20Marcar%C3%AD.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573046009938?text=Hola%2C%20vi%20lo%20de%20Hotel%20Marcar%C3%AD.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="70">
+        <td class="col-nombre">Hotel Costa Mar</td>
+        <td>310 5717778</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573105717778?text=Hola%2C%20vi%20lo%20de%20Hotel%20Costa%20Mar.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573105717778?text=Hola%2C%20vi%20lo%20de%20Hotel%20Costa%20Mar.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="71">
+        <td class="col-nombre">Hotel Faranda Express Puerta del Sol Barranquilla, a member of Radisson Individuals</td>
+        <td>315 7799595</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573157799595?text=Hola%2C%20vi%20lo%20de%20Hotel%20Faranda%20Express%20Puerta%20del%20So.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573157799595?text=Hola%2C%20vi%20lo%20de%20Hotel%20Faranda%20Express%20Puerta%20del%20So.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="72">
+        <td class="col-nombre">Hotel Monterrey</td>
+        <td>301 6115126</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573016115126?text=Hola%2C%20vi%20lo%20de%20Hotel%20Monterrey.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573016115126?text=Hola%2C%20vi%20lo%20de%20Hotel%20Monterrey.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="73">
+        <td class="col-nombre">Hotel NH Collection Barranquilla Smartsuites Royal</td>
+        <td>313 2464228</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573132464228?text=Hola%2C%20vi%20lo%20de%20Hotel%20NH%20Collection%20Barranquilla%20Sm.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573132464228?text=Hola%2C%20vi%20lo%20de%20Hotel%20NH%20Collection%20Barranquilla%20Sm.%20Te%20escribo%20porque%20trabajamos%20con%20hoteles%20en%20Barranquilla%20ofreciendo%20mantenimiento%20preventivo%20y%20correctivo%20de%20aires%20acondicionados%20(split%2C%20piso%20techo%2C%20cassette%2C%20central).%20Sabemos%20que%20para%20un%20hotel%20los%20aires%20son%20prioridad%20%E2%80%94%20hu%C3%A9spedes%20c%C3%B3modos%2C%20sin%20quejas%20y%20eficiencia%20energ%C3%A9tica.%20%C2%BFTienen%20convenio%20con%20alguien%20actualmente%20o%20podr%C3%ADa%20cotizarles%20un%20plan%20de%20mantenimiento%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr class="tipo-header"><td colspan="5">[INDUSTRIAS] (4)</td></tr>
+<tr data-idx="74">
+        <td class="col-nombre">INDUSTRIAS GUINOVART SAS</td>
+        <td>314 5410875</td>
+        <td class="servicios">Asesoria SST, CCTV / Seguridad Electronica, Energia Solar (ON GRID)</td>
+        <td><a href="https://wa.me/573145410875?text=Hola%2C%20vi%20INDUSTRIAS%20GUINOVART%20SAS.%20Trabajamos%20con%20industrias%20en%20Barranquilla%20ofreciendo%20mantenimiento%20de%20sistemas%20de%20climatizaci%C3%B3n%20para%20%C3%A1reas%20de%20producci%C3%B3n%2C%20oficinas%20y%20cuartos%20de%20control.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20industriales%20y%20asesor%C3%ADa%20en%20seguridad%20SST.%20%C2%BFLes%20sirve%20una%20propuesta%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573145410875?text=Hola%2C%20vi%20INDUSTRIAS%20GUINOVART%20SAS.%20Trabajamos%20con%20industrias%20en%20Barranquilla%20ofreciendo%20mantenimiento%20de%20sistemas%20de%20climatizaci%C3%B3n%20para%20%C3%A1reas%20de%20producci%C3%B3n%2C%20oficinas%20y%20cuartos%20de%20control.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20industriales%20y%20asesor%C3%ADa%20en%20seguridad%20SST.%20%C2%BFLes%20sirve%20una%20propuesta%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="75">
+        <td class="col-nombre">INDUSTRIAS EL MANANTIAL BARRANQUILLA</td>
+        <td>310 6236175</td>
+        <td class="servicios">Asesoria SST, CCTV / Seguridad Electronica, Energia Solar (ON GRID)</td>
+        <td><a href="https://wa.me/573106236175?text=Hola%2C%20vi%20INDUSTRIAS%20EL%20MANANTIAL%20BARRANQUILL.%20Trabajamos%20con%20industrias%20en%20Barranquilla%20ofreciendo%20mantenimiento%20de%20sistemas%20de%20climatizaci%C3%B3n%20para%20%C3%A1reas%20de%20producci%C3%B3n%2C%20oficinas%20y%20cuartos%20de%20control.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20industriales%20y%20asesor%C3%ADa%20en%20seguridad%20SST.%20%C2%BFLes%20sirve%20una%20propuesta%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573106236175?text=Hola%2C%20vi%20INDUSTRIAS%20EL%20MANANTIAL%20BARRANQUILL.%20Trabajamos%20con%20industrias%20en%20Barranquilla%20ofreciendo%20mantenimiento%20de%20sistemas%20de%20climatizaci%C3%B3n%20para%20%C3%A1reas%20de%20producci%C3%B3n%2C%20oficinas%20y%20cuartos%20de%20control.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20industriales%20y%20asesor%C3%ADa%20en%20seguridad%20SST.%20%C2%BFLes%20sirve%20una%20propuesta%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="76">
+        <td class="col-nombre">Industrias Famapan del Caribe</td>
+        <td>302 2953638</td>
+        <td class="servicios">Asesoria SST, CCTV / Seguridad Electronica, Energia Solar (ON GRID)</td>
+        <td><a href="https://wa.me/573022953638?text=Hola%2C%20vi%20Industrias%20Famapan%20del%20Caribe.%20Trabajamos%20con%20industrias%20en%20Barranquilla%20ofreciendo%20mantenimiento%20de%20sistemas%20de%20climatizaci%C3%B3n%20para%20%C3%A1reas%20de%20producci%C3%B3n%2C%20oficinas%20y%20cuartos%20de%20control.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20industriales%20y%20asesor%C3%ADa%20en%20seguridad%20SST.%20%C2%BFLes%20sirve%20una%20propuesta%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573022953638?text=Hola%2C%20vi%20Industrias%20Famapan%20del%20Caribe.%20Trabajamos%20con%20industrias%20en%20Barranquilla%20ofreciendo%20mantenimiento%20de%20sistemas%20de%20climatizaci%C3%B3n%20para%20%C3%A1reas%20de%20producci%C3%B3n%2C%20oficinas%20y%20cuartos%20de%20control.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20industriales%20y%20asesor%C3%ADa%20en%20seguridad%20SST.%20%C2%BFLes%20sirve%20una%20propuesta%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="77">
+        <td class="col-nombre">Industrias Cruz Y Cañon Lmtda. muebles metalicos y carpinteria.</td>
+        <td>320 5317282</td>
+        <td class="servicios">Asesoria SST, CCTV / Seguridad Electronica, Energia Solar (ON GRID)</td>
+        <td><a href="https://wa.me/573205317282?text=Hola%2C%20vi%20Industrias%20Cruz%20Y%20Ca%C3%B1on%20Lmtda.%20mueb.%20Trabajamos%20con%20industrias%20en%20Barranquilla%20ofreciendo%20mantenimiento%20de%20sistemas%20de%20climatizaci%C3%B3n%20para%20%C3%A1reas%20de%20producci%C3%B3n%2C%20oficinas%20y%20cuartos%20de%20control.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20industriales%20y%20asesor%C3%ADa%20en%20seguridad%20SST.%20%C2%BFLes%20sirve%20una%20propuesta%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573205317282?text=Hola%2C%20vi%20Industrias%20Cruz%20Y%20Ca%C3%B1on%20Lmtda.%20mueb.%20Trabajamos%20con%20industrias%20en%20Barranquilla%20ofreciendo%20mantenimiento%20de%20sistemas%20de%20climatizaci%C3%B3n%20para%20%C3%A1reas%20de%20producci%C3%B3n%2C%20oficinas%20y%20cuartos%20de%20control.%20Tambi%C3%A9n%20hacemos%20instalaciones%20el%C3%A9ctricas%20industriales%20y%20asesor%C3%ADa%20en%20seguridad%20SST.%20%C2%BFLes%20sirve%20una%20propuesta%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr class="tipo-header"><td colspan="5">[MOTELES] (16)</td></tr>
+<tr data-idx="78">
+        <td class="col-nombre">Hotel ByHours Astor</td>
+        <td>300 3589279</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573003589279?text=Hola%2C%20vi%20Hotel%20ByHours%20Astor.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573003589279?text=Hola%2C%20vi%20Hotel%20ByHours%20Astor.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="79">
+        <td class="col-nombre">Hotel ByHours Circunvalar</td>
+        <td>310 2385134</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573102385134?text=Hola%2C%20vi%20Hotel%20ByHours%20Circunvalar.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573102385134?text=Hola%2C%20vi%20Hotel%20ByHours%20Circunvalar.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="80">
+        <td class="col-nombre">Motel Sahara</td>
+        <td>313 5899913</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573135899913?text=Hola%2C%20vi%20Motel%20Sahara.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573135899913?text=Hola%2C%20vi%20Motel%20Sahara.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="81">
+        <td class="col-nombre">La Calera Fenix</td>
+        <td>315 7377220</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573157377220?text=Hola%2C%20vi%20La%20Calera%20Fenix.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573157377220?text=Hola%2C%20vi%20La%20Calera%20Fenix.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="82">
+        <td class="col-nombre">HOTEL UNIVERSOS - MOTEL LA LUNA</td>
+        <td>315 8834141</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573158834141?text=Hola%2C%20vi%20HOTEL%20UNIVERSOS.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573158834141?text=Hola%2C%20vi%20HOTEL%20UNIVERSOS.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="83">
+        <td class="col-nombre">Hotel Ayenda Skall 1319</td>
+        <td>315 7985380</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573157985380?text=Hola%2C%20vi%20Hotel%20Ayenda%20Skall%201319.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573157985380?text=Hola%2C%20vi%20Hotel%20Ayenda%20Skall%201319.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="84">
+        <td class="col-nombre">Hotel las nubes</td>
+        <td>314 7047230</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573147047230?text=Hola%2C%20vi%20Hotel%20las%20nubes.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573147047230?text=Hola%2C%20vi%20Hotel%20las%20nubes.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="85">
+        <td class="col-nombre">Hotel El Diamante</td>
+        <td>316 4539362</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573164539362?text=Hola%2C%20vi%20Hotel%20El%20Diamante.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573164539362?text=Hola%2C%20vi%20Hotel%20El%20Diamante.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="86">
+        <td class="col-nombre">Hotel 56 Avenue</td>
+        <td>318 7720064</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573187720064?text=Hola%2C%20vi%20Hotel%2056%20Avenue.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573187720064?text=Hola%2C%20vi%20Hotel%2056%20Avenue.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="87">
+        <td class="col-nombre">Hostal El Recreo</td>
+        <td>301 6900507</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573016900507?text=Hola%2C%20vi%20Hostal%20El%20Recreo.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573016900507?text=Hola%2C%20vi%20Hostal%20El%20Recreo.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="88">
+        <td class="col-nombre">Hospedaje Altamira</td>
+        <td>321 6381994</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573216381994?text=Hola%2C%20vi%20Hospedaje%20Altamira.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573216381994?text=Hola%2C%20vi%20Hospedaje%20Altamira.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="89">
+        <td class="col-nombre">Hotel Via 40</td>
+        <td>321 5547828</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573215547828?text=Hola%2C%20vi%20Hotel%20Via%2040.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573215547828?text=Hola%2C%20vi%20Hotel%20Via%2040.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="90">
+        <td class="col-nombre">Hotel Caribe 79</td>
+        <td>310 3547979</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573103547979?text=Hola%2C%20vi%20Hotel%20Caribe%2079.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573103547979?text=Hola%2C%20vi%20Hotel%20Caribe%2079.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="91">
+        <td class="col-nombre">Hotel El Camino</td>
+        <td>314 6690025</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573146690025?text=Hola%2C%20vi%20Hotel%20El%20Camino.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573146690025?text=Hola%2C%20vi%20Hotel%20El%20Camino.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="92">
+        <td class="col-nombre">Hotel - Hostal Lumar</td>
+        <td>314 7557585</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573147557585?text=Hola%2C%20vi%20Hotel.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573147557585?text=Hola%2C%20vi%20Hotel.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="93">
+        <td class="col-nombre">Hotel Fontamar 72</td>
+        <td>300 4103072</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573004103072?text=Hola%2C%20vi%20Hotel%20Fontamar%2072.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573004103072?text=Hola%2C%20vi%20Hotel%20Fontamar%2072.%20Trabajamos%20con%20moteles%20y%20hoteles%20en%20Barranquilla%20manteniendo%20sus%20equipos%20de%20aire%20acondicionado%20al%20d%C3%ADa.%20Sabemos%20que%20la%20rotaci%C3%B3n%20de%20habitaciones%20exige%20tener%20los%20aires%20siempre%20listos.%20Les%20ofrezco%20un%20diagn%C3%B3stico%20gratuito%20de%20sus%20equipos%20y%20una%20propuesta%20de%20mantenimiento%20sin%20compromiso.%20%C2%BFLes%20sirve%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr class="tipo-header"><td colspan="5">[RESTAURANTES] (17)</td></tr>
+<tr data-idx="94">
+        <td class="col-nombre">El Celler</td>
+        <td>311 3757575</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573113757575?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20El%20Celler.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573113757575?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20El%20Celler.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="95">
+        <td class="col-nombre">El Patio De La 21</td>
+        <td>300 6821618</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573006821618?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20El%20Patio%20De%20La%2021.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573006821618?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20El%20Patio%20De%20La%2021.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="96">
+        <td class="col-nombre">Restaurante Palo de Mango</td>
+        <td>304 6434737</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573046434737?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20Palo%20de%20Mango.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573046434737?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20Palo%20de%20Mango.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="97">
+        <td class="col-nombre">Restaurante Ébano</td>
+        <td>304 6104739</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573046104739?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20%C3%89bano.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573046104739?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20%C3%89bano.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="98">
+        <td class="col-nombre">Mistura Barranquilla</td>
+        <td>304 5677632</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573045677632?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Mistura%20Barranquilla.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573045677632?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Mistura%20Barranquilla.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="99">
+        <td class="col-nombre">Varadero</td>
+        <td>317 8933016</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573178933016?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Varadero.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573178933016?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Varadero.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="100">
+        <td class="col-nombre">Storia D'Amore Barranquilla</td>
+        <td>300 9134441</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573009134441?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Storia%20D'Amore%20Barranquilla.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573009134441?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Storia%20D'Amore%20Barranquilla.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="101">
+        <td class="col-nombre">Restaurante Rojo Madrid</td>
+        <td>315 5696140</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573155696140?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20Rojo%20Madrid.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573155696140?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20Rojo%20Madrid.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="102">
+        <td class="col-nombre">Smoke House Restaurante</td>
+        <td>313 3979803</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573133979803?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Smoke%20House%20Restaurante.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573133979803?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Smoke%20House%20Restaurante.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="103">
+        <td class="col-nombre">Botero's Barranquilla</td>
+        <td>301 1988055</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573011988055?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Botero's%20Barranquilla.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573011988055?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Botero's%20Barranquilla.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="104">
+        <td class="col-nombre">Olio RistoBar</td>
+        <td>315 4665657</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573154665657?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Olio%20RistoBar.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573154665657?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Olio%20RistoBar.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="105">
+        <td class="col-nombre">Casa en el Aire Barranquilla</td>
+        <td>312 5688403</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573125688403?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Casa%20en%20el%20Aire%20Barranquilla.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573125688403?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Casa%20en%20el%20Aire%20Barranquilla.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="106">
+        <td class="col-nombre">Restaurante Sabina</td>
+        <td>318 3677865</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573183677865?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20Sabina.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573183677865?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20Sabina.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="107">
+        <td class="col-nombre">Devoto Restaurante</td>
+        <td>320 3422136</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573203422136?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Devoto%20Restaurante.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573203422136?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Devoto%20Restaurante.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="108">
+        <td class="col-nombre">La Empírica Cocina De Autor</td>
+        <td>316 2763780</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573162763780?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20La%20Emp%C3%ADrica%20Cocina%20De%20Autor.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573162763780?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20La%20Emp%C3%ADrica%20Cocina%20De%20Autor.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="109">
+        <td class="col-nombre">L’eden GastroBar</td>
+        <td>300 6231281</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573006231281?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20L%E2%80%99eden%20GastroBar.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573006231281?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20L%E2%80%99eden%20GastroBar.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="110">
+        <td class="col-nombre">Restaurante la Potra</td>
+        <td>304 6795093</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Instalaciones Electricas</td>
+        <td><a href="https://wa.me/573046795093?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20la%20Potra.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573046795093?text=Hola%2C%20soy%20t%C3%A9cnico%20en%20climatizaci%C3%B3n%20y%20vi%20lo%20de%20Restaurante%20la%20Potra.%20En%20los%20restaurantes%20es%20clave%20tener%20los%20aires%20funcionando%20bien%20%E2%80%94%20tanto%20en%20el%20sal%C3%B3n%20como%20en%20cocina.%20Hacemos%20mantenimiento%20preventivo%20y%20correctivo%20de%20splits%2C%20cassettes%20y%20sistemas%20centrales.%20Si%20les%20interesa%2C%20puedo%20pasarles%20una%20cotizaci%C3%B3n.%20%C2%BFQu%C3%A9%20tal%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr class="tipo-header"><td colspan="5">[SUPERMERCADOS] (2)</td></tr>
+<tr data-idx="111">
+        <td class="col-nombre">Olímpica Calle 68</td>
+        <td>314 6182858</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Energia Solar (ON GRID)</td>
+        <td><a href="https://wa.me/573146182858?text=Hola%2C%20vi%20lo%20de%20Ol%C3%ADmpica%20Calle%2068.%20Somos%20especialistas%20en%20climatizaci%C3%B3n%20para%20supermercados%20y%20grandes%20superficies.%20Sistemas%20centrales%2C%20cuartos%20fr%C3%ADos%2C%20%C3%A1reas%20de%20ventas.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo.%20%C2%BFEstar%C3%ADan%20interesados%20en%20una%20propuesta%20t%C3%A9cnica%20sin%20compromiso%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573146182858?text=Hola%2C%20vi%20lo%20de%20Ol%C3%ADmpica%20Calle%2068.%20Somos%20especialistas%20en%20climatizaci%C3%B3n%20para%20supermercados%20y%20grandes%20superficies.%20Sistemas%20centrales%2C%20cuartos%20fr%C3%ADos%2C%20%C3%A1reas%20de%20ventas.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo.%20%C2%BFEstar%C3%ADan%20interesados%20en%20una%20propuesta%20t%C3%A9cnica%20sin%20compromiso%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="112">
+        <td class="col-nombre">Megatiendas - Sede Boston (Barranquilla)</td>
+        <td>310 7328645</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Energia Solar (ON GRID)</td>
+        <td><a href="https://wa.me/573107328645?text=Hola%2C%20vi%20lo%20de%20Megatiendas.%20Somos%20especialistas%20en%20climatizaci%C3%B3n%20para%20supermercados%20y%20grandes%20superficies.%20Sistemas%20centrales%2C%20cuartos%20fr%C3%ADos%2C%20%C3%A1reas%20de%20ventas.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo.%20%C2%BFEstar%C3%ADan%20interesados%20en%20una%20propuesta%20t%C3%A9cnica%20sin%20compromiso%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573107328645?text=Hola%2C%20vi%20lo%20de%20Megatiendas.%20Somos%20especialistas%20en%20climatizaci%C3%B3n%20para%20supermercados%20y%20grandes%20superficies.%20Sistemas%20centrales%2C%20cuartos%20fr%C3%ADos%2C%20%C3%A1reas%20de%20ventas.%20Ofrecemos%20mantenimiento%20preventivo%20y%20correctivo.%20%C2%BFEstar%C3%ADan%20interesados%20en%20una%20propuesta%20t%C3%A9cnica%20sin%20compromiso%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr class="tipo-header"><td colspan="5">[UNIVERSIDADES] (4)</td></tr>
+<tr data-idx="113">
+        <td class="col-nombre">CUL CORPORACION UNIVERSITARIA LATINOAMERICANA</td>
+        <td>302 2106952</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, Asesoria SST, CCTV / Seguridad Electronica</td>
+        <td><a href="https://wa.me/573022106952?text=Hola%2C%20vi%20lo%20de%20CUL%20CORPORACION%20UNIVERSITARIA%20LATIN.%20Trabajamos%20con%20universidades%20dando%20mantenimiento%20a%20sus%20sistemas%20de%20climatizaci%C3%B3n%20%E2%80%94%20auditorios%2C%20bibliotecas%2C%20aulas%2C%20laboratorios.%20Si%20est%C3%A1n%20buscando%20optimizar%20sus%20equipos%20de%20aire%20o%20necesitan%20mantenimiento%2C%20podemos%20cotizarles%20sin%20compromiso.%20%C2%BFC%C3%B3mo%20ven%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573022106952?text=Hola%2C%20vi%20lo%20de%20CUL%20CORPORACION%20UNIVERSITARIA%20LATIN.%20Trabajamos%20con%20universidades%20dando%20mantenimiento%20a%20sus%20sistemas%20de%20climatizaci%C3%B3n%20%E2%80%94%20auditorios%2C%20bibliotecas%2C%20aulas%2C%20laboratorios.%20Si%20est%C3%A1n%20buscando%20optimizar%20sus%20equipos%20de%20aire%20o%20necesitan%20mantenimiento%2C%20podemos%20cotizarles%20sin%20compromiso.%20%C2%BFC%C3%B3mo%20ven%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="114">
+        <td class="col-nombre">Corporación Universitaria Empresarial de Salamanca Sede 1 Sur Cordialidad</td>
+        <td>302 2708482</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, Asesoria SST, CCTV / Seguridad Electronica</td>
+        <td><a href="https://wa.me/573022708482?text=Hola%2C%20vi%20lo%20de%20Corporaci%C3%B3n%20Universitaria%20Empresari.%20Trabajamos%20con%20universidades%20dando%20mantenimiento%20a%20sus%20sistemas%20de%20climatizaci%C3%B3n%20%E2%80%94%20auditorios%2C%20bibliotecas%2C%20aulas%2C%20laboratorios.%20Si%20est%C3%A1n%20buscando%20optimizar%20sus%20equipos%20de%20aire%20o%20necesitan%20mantenimiento%2C%20podemos%20cotizarles%20sin%20compromiso.%20%C2%BFC%C3%B3mo%20ven%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573022708482?text=Hola%2C%20vi%20lo%20de%20Corporaci%C3%B3n%20Universitaria%20Empresari.%20Trabajamos%20con%20universidades%20dando%20mantenimiento%20a%20sus%20sistemas%20de%20climatizaci%C3%B3n%20%E2%80%94%20auditorios%2C%20bibliotecas%2C%20aulas%2C%20laboratorios.%20Si%20est%C3%A1n%20buscando%20optimizar%20sus%20equipos%20de%20aire%20o%20necesitan%20mantenimiento%2C%20podemos%20cotizarles%20sin%20compromiso.%20%C2%BFC%C3%B3mo%20ven%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="115">
+        <td class="col-nombre">Universidad del Tolima-CAT Barranquilla</td>
+        <td>300 4626636</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, Asesoria SST, CCTV / Seguridad Electronica</td>
+        <td><a href="https://wa.me/573004626636?text=Hola%2C%20vi%20lo%20de%20Universidad%20del%20Tolima-CAT%20Barranqu.%20Trabajamos%20con%20universidades%20dando%20mantenimiento%20a%20sus%20sistemas%20de%20climatizaci%C3%B3n%20%E2%80%94%20auditorios%2C%20bibliotecas%2C%20aulas%2C%20laboratorios.%20Si%20est%C3%A1n%20buscando%20optimizar%20sus%20equipos%20de%20aire%20o%20necesitan%20mantenimiento%2C%20podemos%20cotizarles%20sin%20compromiso.%20%C2%BFC%C3%B3mo%20ven%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573004626636?text=Hola%2C%20vi%20lo%20de%20Universidad%20del%20Tolima-CAT%20Barranqu.%20Trabajamos%20con%20universidades%20dando%20mantenimiento%20a%20sus%20sistemas%20de%20climatizaci%C3%B3n%20%E2%80%94%20auditorios%2C%20bibliotecas%2C%20aulas%2C%20laboratorios.%20Si%20est%C3%A1n%20buscando%20optimizar%20sus%20equipos%20de%20aire%20o%20necesitan%20mantenimiento%2C%20podemos%20cotizarles%20sin%20compromiso.%20%C2%BFC%C3%B3mo%20ven%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+<tr data-idx="116">
+        <td class="col-nombre">UNIVERSIDAD SANTO TOMÁS</td>
+        <td>317 6482253</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, Asesoria SST, CCTV / Seguridad Electronica</td>
+        <td><a href="https://wa.me/573176482253?text=Hola%2C%20vi%20lo%20de%20UNIVERSIDAD%20SANTO%20TOM%C3%81S.%20Trabajamos%20con%20universidades%20dando%20mantenimiento%20a%20sus%20sistemas%20de%20climatizaci%C3%B3n%20%E2%80%94%20auditorios%2C%20bibliotecas%2C%20aulas%2C%20laboratorios.%20Si%20est%C3%A1n%20buscando%20optimizar%20sus%20equipos%20de%20aire%20o%20necesitan%20mantenimiento%2C%20podemos%20cotizarles%20sin%20compromiso.%20%C2%BFC%C3%B3mo%20ven%3F" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573176482253?text=Hola%2C%20vi%20lo%20de%20UNIVERSIDAD%20SANTO%20TOM%C3%81S.%20Trabajamos%20con%20universidades%20dando%20mantenimiento%20a%20sus%20sistemas%20de%20climatizaci%C3%B3n%20%E2%80%94%20auditorios%2C%20bibliotecas%2C%20aulas%2C%20laboratorios.%20Si%20est%C3%A1n%20buscando%20optimizar%20sus%20equipos%20de%20aire%20o%20necesitan%20mantenimiento%2C%20podemos%20cotizarles%20sin%20compromiso.%20%C2%BFC%C3%B3mo%20ven%3F" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+</tbody></tbody></table>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Test</title></head>
+<body style="background:#0d0d0d;color:#e0e0e0;font-family:system-ui;padding:40px">
+  <h1 style="color:#ff2222">Test funciona</h1>
+  <p>Si ves esto, el HTML se renderiza correctamente.</p>
+  <script>
+    document.body.innerHTML += '<p style="color:green">JavaScript tambien funciona</p>';
+    try {
+      localStorage.setItem('test', 'ok');
+      document.body.innerHTML += '<p style="color:green">localStorage funciona</p>';
+    } catch(e) {
+      document.body.innerHTML += '<p style="color:orange">localStorage NO: ' + e.message + '</p>';
+    }
+  </script>
+</body>
+</html>

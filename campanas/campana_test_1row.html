@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test 1 row</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0d0d0d; padding: 24px; color: #e0e0e0; }
+  .header { background: #111; border-bottom: 2px solid #222; color: white; padding: 28px 24px; border-radius: 8px; margin-bottom: 24px; }
+  .header h1 { font-size: 20px; font-weight: 600; color: #fff; }
+  .header p { color: #888; font-size: 13px; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; background: #111; border-radius: 6px; overflow: hidden; border: 1px solid #222; }
+  th { background: #111; color: #999; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #222; }
+  td { padding: 10px 14px; border-bottom: 1px solid #181818; font-size: 13px; color: #e0e0e0; }
+  tr:hover { background: #181818; }
+  .tipo-header td { background: #0a0a0a; font-weight: 600; color: #ff3333; padding: 6px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .btn { display: inline-block; background: transparent; color: #ff3333; padding: 4px 12px; border-radius: 3px; text-decoration: none; font-size: 12px; font-weight: 500; border: 1px solid #ff3333; }
+  .btn:hover { background: #ff2222; color: white; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Test — 1 fila de campana</h1>
+  <p>Si ves esto, 1 fila funciona</p>
+</div>
+<table>
+<thead><tr><th>Nombre</th><th>Telefono</th><th>Servicios</th><th>WhatsApp</th><th>Vista Previa</th></tr></thead>
+<tbody>
+<tr class="tipo-header"><td colspan="5">[ALMACENES GRANDES] (1)</td></tr><tr data-idx="0">
+        <td class="col-nombre">Distribuidora Gonzalez</td>
+        <td>300 5795255</td>
+        <td class="servicios">Aire Acondicionado / Climatizacion, CCTV / Seguridad Electronica, Control de Acceso</td>
+        <td><a href="https://wa.me/573005795255?text=Hola" target="_blank" class="btn">Enviar</a></td>
+        <td><a href="https://wa.me/573005795255?text=Hola" target="_blank" class="btn-preview">Msj</a></td>
+      </tr>
+</tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "producto": "mantenimiento de aires acondicionados",
+  "servicios_clave": [
+    "Aire Acondicionado / Climatizacion",
+    "Instalaciones Electricas",
+    "CCTV / Seguridad Electronica",
+    "Control de Acceso",
+    "Infraestructura Tecnologica (Racks, UPS, Servidores)",
+    "Energia Solar",
+    "Asesoria SST"
+  ],
+  "propuesta_valor": "servicio rapido, profesional y con respuesta prioritaria",
+  "ubicacion": "Barranquilla",
+  "diferenciador": "planes de mantenimiento preventivo con cobertura en toda la ciudad"
+}

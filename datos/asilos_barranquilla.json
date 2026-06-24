@@ -1,0 +1,272 @@
+[
+  {
+    "nombre": "Hogar Geriátrico La Casa del Veterano",
+    "telefono": "305 2578415",
+    "direccion": "Cra. 38a #74-61, Las Mercedes, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "https://linktr.ee/hglacasadelveterano.com",
+    "rating": 5,
+    "votos": 28,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Fundacion Hogar Integravida | Centro de cuidado al adulto mayor",
+    "telefono": "311 3578583",
+    "direccion": "Cl. 70b #34 - 92, El Recreo, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "https://hogar.integravida.com.co/",
+    "rating": 5,
+    "votos": 14,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriátrico El milagroso.. Cuidado de Ancianos y Pacientes Especiales",
+    "telefono": "314 5214887",
+    "direccion": "Cra. 30 # 71 - 52, El Recreo, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 5,
+    "votos": 2,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriátrico Siervas de Jesús de la Caridad Barranquilla",
+    "telefono": "320 8389024",
+    "direccion": "Cra. 39 #75C-23, Las Mercedes, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "https://hogargeriatricosiervasdejesus.com/",
+    "rating": 4.8,
+    "votos": 44,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Fundación Hogar Geriátrico Mi Dulce Refugio",
+    "telefono": "350 6647198",
+    "direccion": "Cra. 46 #80-253, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "http://hogargeriatricobarranquilla.com/",
+    "rating": 5,
+    "votos": 109,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriátrico Madre Marcelina",
+    "telefono": "(605) 3588494",
+    "direccion": "Calle 71, con, Cra. 38 #38-09, El Recreo, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 4.7,
+    "votos": 27,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Fundacion Confrancianos",
+    "telefono": "",
+    "direccion": "El Recreo, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 1,
+    "votos": 1,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriátrico Andares de Antaño",
+    "telefono": "304 5833824",
+    "direccion": "Cl. 55 #44 - 133, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 5,
+    "votos": 8,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Asilo San Antonio barranquiia",
+    "telefono": "(605) 3412962",
+    "direccion": "Cl. 47 #39-51, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "https://www.paginasamarillas.com.co/empresas/asilo-san-antonio/barranquilla-15584727",
+    "rating": 4.4,
+    "votos": 8,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Asilo Hogar Granja San José",
+    "telefono": "3093103",
+    "direccion": "Cl. 30 #1-245, Cisneros, Barranquilla, Soledad, Atlántico, Colombia",
+    "sitio_web": "https://asilogranjasanjose.org/",
+    "rating": 5,
+    "votos": 11,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "TUS ABUELOS BARRANQUILLA",
+    "telefono": "301 2587374",
+    "direccion": "Cl. 73b #39 28, Betania, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "http://www.tusabuelosbaq.com.co/",
+    "rating": 3.9,
+    "votos": 7,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriátrico Casa Blanca",
+    "telefono": "310 6357329",
+    "direccion": "Calle 92 #42D-27 Cra 42F # 90 - 154, Cl. 92 #42D -30, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "http://www.hogarcasablanca.com/",
+    "rating": 5,
+    "votos": 15,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar San Camilo",
+    "telefono": "(605) 3481041",
+    "direccion": "Cl. 100 #12F – 35, Palquema, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 4.7,
+    "votos": 53,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriátrico Atardecer Sereno",
+    "telefono": "(605) 3423014",
+    "direccion": "Carrera 42F1 #80 125, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "http://atardecersereno.com/",
+    "rating": 4.3,
+    "votos": 30,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Fundación Hogar Francisco de Asís",
+    "telefono": "302 2895570",
+    "direccion": "Cra. 60 #66-78, San Francisco, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "https://www.laspaginasamarillasencolombia.com/fundacion-hogar-francisco-de-asis/",
+    "rating": null,
+    "votos": 0,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriátrico Nuevo Despertar",
+    "telefono": "302 3296246",
+    "direccion": "Cra. 49 #66-60, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "http://www.hogarnuevodespertar.com/",
+    "rating": 4.8,
+    "votos": 8,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriatrico Refugio Fe Y Esperanza",
+    "telefono": "",
+    "direccion": "Cl. 86 #64, Riomar, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 5,
+    "votos": 2,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Fundación Casa Del Abuelo",
+    "telefono": "",
+    "direccion": "Cl. 86 #42B1, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 5,
+    "votos": 1,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Semillitas de Fe - Hogar Geriátrico Sede N2",
+    "telefono": "(605) 3203257",
+    "direccion": "Cra. 43b #90-94, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "https://www.instagram.com/hogarsemillitasdefe/?hl=es",
+    "rating": 5,
+    "votos": 6,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriátrico Amor y Paz",
+    "telefono": "(605) 3563127",
+    "direccion": "Cra. 43b #79-76, El Porvenir, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "https://hogargeriatricoamorypaz.webnode.es/",
+    "rating": null,
+    "votos": 0,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar Geriatrico Angel's Home",
+    "telefono": "310 3672958",
+    "direccion": "Cl. 71 #2732, El Recreo, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 3.8,
+    "votos": 17,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Hogar geriátrico Fundación hogar de paso mis mejores años",
+    "telefono": "300 5184047",
+    "direccion": "Cra. 42h #79B-39, El Porvenir, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "https://www.instagram.com/geriatrico_fmma?igsh=MTNlZmdscjN0NTh3Yg==",
+    "rating": 5,
+    "votos": 1,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Fundacion Multiactiva Club Fuente De Shaloom",
+    "telefono": "",
+    "direccion": "a 39-218, Cl. 73b #39-2, Betania, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 5,
+    "votos": 1,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Fundación Hogar La Roca",
+    "telefono": "(605) 3567280",
+    "direccion": "Cra. 59 #74-30, La Concepción, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "http://fundaroca.org/",
+    "rating": 4.6,
+    "votos": 19,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Centro De Vida Bajo Valle",
+    "telefono": "",
+    "direccion": "Cra. 18 # 71-13, La Esmeralda, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 4.8,
+    "votos": 5,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "hogar geriátrico mis años dorados",
+    "telefono": "",
+    "direccion": "Cl. 64 #64-21, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 5,
+    "votos": 3,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Tercera edad Jesús con Nosotros",
+    "telefono": "",
+    "direccion": "Cl. 99c #8e-39, El Bosque, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 5,
+    "votos": 1,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Centro De Vida La Sierra",
+    "telefono": "",
+    "direccion": "Cl. 54, Metropolitana, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 4.2,
+    "votos": 5,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Estar en casa",
+    "telefono": "",
+    "direccion": "Cra. 65 #6448, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": 5,
+    "votos": 2,
+    "tipo": "asilos"
+  },
+  {
+    "nombre": "Casa Geriátrica Fundación Nuestra Sra Del Carmen",
+    "telefono": "",
+    "direccion": "Cl. 68 #44-77, Nte. Centro Historico, Barranquilla, Atlántico, Colombia",
+    "sitio_web": "",
+    "rating": null,
+    "votos": 0,
+    "tipo": "asilos"
+  }
+]
