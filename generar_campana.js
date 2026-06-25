@@ -279,10 +279,14 @@ function cargarCfg() {
   r2.open("GET", "/api/smtp-config", true);
   r2.onload = function() {
     var d = JSON.parse(r2.responseText);
-    document.getElementById("smtpUser").value = d.user || "";
+    document.getElementById("smtpUser").value = d.accounts && d.accounts.length > 0 ? d.accounts[0].user : "";
     document.getElementById("sgKey").value = d.sendgrid ? "***configurado***" : "";
-    document.getElementById("smtpCfgStatus").textContent = d.configured ? (d.sendgrid ? "SendGrid" : "SMTP") : "No configurado";
-    document.getElementById("smtpCfgStatus").style.color = d.configured ? "#3b3" : "#833";
+    var txt = "";
+    if (d.sendgrid) txt = "SendGrid";
+    else if (d.count > 0) txt = d.count + " cuenta(s) SMTP · " + d.today + "/" + d.daily_limit + " hoy";
+    else txt = "No configurado";
+    document.getElementById("smtpCfgStatus").textContent = txt;
+    document.getElementById("smtpCfgStatus").style.color = d.count > 0 ? "#3b3" : "#833";
   };
   r2.send();
 }
@@ -315,7 +319,11 @@ function guardarCfg() {
     var rs = new XMLHttpRequest();
     rs.open("POST", "/api/smtp-config", true);
     rs.setRequestHeader("Content-Type", "application/json");
-    rs.send(JSON.stringify({ user: smtpUser, pass: smtpPass, sendgrid: sgKey }));
+    var payload = { sendgrid: sgKey };
+    if (smtpUser || smtpPass) {
+      payload.accounts = [{ user: smtpUser, pass: smtpPass }];
+    }
+    rs.send(JSON.stringify(payload));
   }
 }
 function mostrarPago() {

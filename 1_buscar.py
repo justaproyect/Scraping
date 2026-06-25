@@ -31,6 +31,29 @@ BUSINESS_TYPES = {
     "salones de belleza": ["salones de belleza", "peluquerias", "centros de estetica", "barberias"],
     "laboratorios": ["laboratorios clinicos", "laboratorios dentales", "laboratorios de analisis"],
     "centros de rehabilitacion": ["centros de rehabilitacion", "terapias fisicas", "clinicas de rehabilitacion"],
+    "veterinarias": ["veterinarias", "clinicas veterinarias", "centros veterinarios", "tiendas de mascotas"],
+    "farmacias": ["farmacias", "droguerias", "tiendas naturistas", "homeopaticas"],
+    "ferreterias": ["ferreterias", "materiales de construccion", "almacenes de construccion", "cerrajerias"],
+    "panaderias": ["panaderias", "pastelerias", "reposterias", "heladerias"],
+    "tiendas de ropa": ["tiendas de ropa", "boutiques", "almacenes de ropa", "ropa deportiva"],
+    "opticas": ["opticas", "centros opticos", "laboratorios opticos"],
+    "lavanderias": ["lavanderias", "tintorerias", "lavasecos"],
+    "cafeterias": ["cafeterias", "cafes", "tiendas de cafe", "casas de te"],
+    "bares": ["bares", "discotecas", "tabernas", "cantinas"],
+    "parqueaderos": ["parqueaderos", "garajes", "estacionamientos"],
+    "zapaterias": ["zapaterias", "tiendas de zapatos", "calzado"],
+    "papelerias": ["papelerias", "librerias", "articulos de oficina", "copias"],
+    "funerarias": ["funerarias", "servicios funerarios", "cementerios", "crematorios"],
+    "floristerias": ["floristerias", "florerias", "venta de flores"],
+    "cines": ["cines", "teatros", "multiplex", "salas de cine"],
+    "mueblerias": ["mueblerias", "tiendas de muebles", "colchoneria", "decoracion"],
+    "electrodomesticos": ["electrodomesticos", "tiendas de tecnologia", "electronica", "celulares"],
+    "centros culturales": ["centros culturales", "museos", "bibliotecas", "galerias de arte"],
+    "talleres bicicletas": ["talleres de bicicletas", "bicicleterias", "venta de bicicletas"],
+    "carnicerias": ["carnicerias", "venta de carnes", "pescaderias", "avicolas"],
+    "escuelas de conduccion": ["escuelas de conduccion", "autoescuelas", "academias de conduccion"],
+    "centros de estetica": ["centros de estetica", "spas", "centros de masajes", "tratamientos corporales"],
+    "tiendas de barrio": ["tiendas de barrio", "minimercados", "graneros", "venta de abarrotes"],
 }
 
 def text_search_paginated(term, location, max_pages=3):
@@ -84,24 +107,33 @@ def get_detail(place_id):
     except:
         return None
 
-def buscar(location="Barranquilla"):
+LOCATIONS = ["Barranquilla"]
+
+def buscar(locations=None):
+    if locations is None:
+        locations = LOCATIONS
     all_places = {}
-    total_queries = sum(len(terms) for terms in BUSINESS_TYPES.values())
-    query_num = 0
-    tipos = list(BUSINESS_TYPES.keys())
-    for btype in tipos:
-        terms = BUSINESS_TYPES[btype]
-        for term in terms:
-            query_num += 1
-            print(f"[{query_num}/{total_queries}] {btype}: buscando '{term}'...")
-            results = text_search_paginated(term, location)
-            for place in results:
-                pid = place.get("place_id")
-                if pid and pid not in all_places:
-                    all_places[pid] = (place.get("name", ""), btype)
-            time.sleep(0.3)
-        print(f"  -> {btype}: {len([p for p in all_places.values() if p[1]==btype])} unicos hasta ahora")
-    print(f"\nTotal places unicos: {len(all_places)}")
+    for location in locations:
+        print(f"\n{'='*60}\nBUSCANDO EN: {location.upper()}\n{'='*60}")
+        total_queries = sum(len(terms) for terms in BUSINESS_TYPES.values())
+        query_num = 0
+        tipos = list(BUSINESS_TYPES.keys())
+        for btype in tipos:
+            terms = BUSINESS_TYPES[btype]
+            for term in terms:
+                query_num += 1
+                print(f"[{query_num}/{total_queries}] {btype}: buscando '{term}'...")
+                results = text_search_paginated(term, location)
+                for place in results:
+                    pid = place.get("place_id")
+                    if pid and pid not in all_places:
+                        all_places[pid] = (place.get("name", ""), btype)
+                time.sleep(0.3)
+            count = len([p for p in all_places.values() if p[1]==btype])
+            print(f"  -> {btype}: {count} unicos hasta ahora")
+        print(f"\n  Subtotal {location}: {len(all_places)} places unicos acumulados")
+    print(f"\n{'='*60}")
+    print(f"TOTAL places unicos (todas las ubicaciones): {len(all_places)}")
     import concurrent.futures, threading
     items = list(all_places.items())
     total = len(items)
@@ -132,11 +164,12 @@ def buscar(location="Barranquilla"):
     con_telefono = [n for n in negocios if n.get("telefono")]
     sin_telefono = [n for n in negocios if not n.get("telefono")]
     print(f"\nTotal: {len(negocios)} | Con telefono: {len(con_telefono)} | Sin telefono: {len(sin_telefono)}")
-    path = os.path.join(DATA_DIR, f"negocios_{location.lower().replace(' ', '_')}.json")
+    out_name = "negocios_barranquilla"
+    path = os.path.join(DATA_DIR, f"{out_name}.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(negocios, f, ensure_ascii=False, indent=2)
     print(f"Guardado: {path}")
-    txt_path = os.path.join(DATA_DIR, f"negocios_{location.lower().replace(' ', '_')}.txt")
+    txt_path = os.path.join(DATA_DIR, f"{out_name}.txt")
     with open(txt_path, "w", encoding="utf-8") as f:
         for n in sorted(negocios, key=lambda x: x.get("tipo", "")):
             f.write(f"[{n.get('tipo',''):30s}] {n.get('nombre',''):50s} | {n.get('telefono',''):20s}\n")
@@ -145,5 +178,5 @@ def buscar(location="Barranquilla"):
 
 if __name__ == "__main__":
     import sys
-    loc = sys.argv[1] if len(sys.argv) > 1 else "Barranquilla"
-    buscar(loc)
+    locs = sys.argv[1:] if len(sys.argv) > 1 else None
+    buscar(locs)
