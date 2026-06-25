@@ -2,4 +2,7 @@ node_modules/
 __pycache__/
 *.pyc
 .gmail_progress.json
+.daily_smtp.json
 datos/smtp_config.json
+scrape_log.txt
+scrape_err.txt
